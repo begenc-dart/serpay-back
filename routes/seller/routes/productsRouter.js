@@ -18,7 +18,8 @@ const {
     addSize,
     editSize,
     editColor,
-    deleteProductColor
+    deleteProductColor,
+    setDiscount
 } = require("../../../controllers/admin/productsControllers")
 const router = express.Router();
 
@@ -36,6 +37,7 @@ router.delete('/:id', deleteProduct);
 router.post('/upload-image/:id', uploadProductImage);
 router.post("/upload-image/by-color/:id", uploadProductImagebyColor)
 router.post("/upload-details/:id", uploadDetails)
+router.post("/discount",setDiscount)
 router.delete("/image/:id", deleteProductImage)
 router.delete("/detail/:id", deleteDetailImage)
 router.delete("/color/:id", deleteProductColor)

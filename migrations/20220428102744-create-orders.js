@@ -87,14 +87,6 @@ module.exports = {
             delivery_time: {
                 type: DataTypes.STRING,
                 allowNull: false,
-                validate: {
-                    notNull: {
-                        msg: "Delivery cannot be null",
-                    },
-                    notEmpty: {
-                        msg: "Delivery cannot be empty",
-                    },
-                },
             },
             note: {
                 type: DataTypes.STRING,

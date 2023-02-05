@@ -215,8 +215,10 @@ exports.getUsersLikedProducts = catchAsync(async(req, res, next) => {
                 as: "images"
             }
         }
-
     })
+    for(let i=0; i<liked_product.liked_products.length;i++){
+        liked_product.liked_products[i].isLiked=true
+    }
     return res.status(200).send({ liked_product: liked_product.liked_products })
 })
 exports.uploadUserImage = catchAsync(async(req, res, next) => {

@@ -110,6 +110,10 @@ exports.select = catchAsync(async(req, res, next) => {
     await order_products.update({ isSelected: req.body.isSelected })
     return res.status(200).send({ order_products })
 })
+exports.selectAll = catchAsync(async(req, res, next) => {
+    await Orderproducts.update({isSelected: true},{where:{userId:req.user.id}})
+    return res.status(200).send("Sucess")
+})
 exports.isOrdered = catchAsync(async(req, res, next) => {
     const { product_id, product_size_id } = req.query
     const product = await Products.findOne({ where: { product_id } })

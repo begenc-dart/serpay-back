@@ -103,7 +103,7 @@ exports.getOneProduct = catchAsync(async(req, res, next) => {
             },
             {
                 model: Categories,
-                as: "categories"
+                as: "category"
             },
             {
                 model: Subcategories,

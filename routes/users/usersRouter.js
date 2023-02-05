@@ -7,7 +7,7 @@ const {
     verify_code,
     verify_code_forgotten,
 } = require('../../controllers/users/authController');
-const { getMyCart, addMyCart, select, updateProduct, deleteProduct, isOrdered, deleteSelected } = require('../../controllers/users/cartControllers');
+const { getMyCart, addMyCart, select, updateProduct, deleteProduct, isOrdered, deleteSelected, selectAll } = require('../../controllers/users/cartControllers');
 const { getNotOrderedProducts, } = require('../../controllers/users/ordersControllers');
 const {
     getMe,
@@ -52,6 +52,7 @@ router.delete("/history/all", protect, deleteAllHistory)
 router.get('/my-cart', protect, getMyCart);
 router.post("/to-my-cart", protect, addMyCart)
 router.get("/is-ordered", protect, isOrdered)
+router.patch("/my-cart/select/all",protect,selectAll)
 router.patch("/my-cart/select/:id", protect, select)
 router.patch("/my-cart/:id", protect, updateProduct)
 router.get("/not-ordered", protect, getNotOrderedProducts)

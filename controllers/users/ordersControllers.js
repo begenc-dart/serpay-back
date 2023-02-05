@@ -5,78 +5,49 @@ const { Op } = require("sequelize")
 exports.addMyOrders = catchAsync(async(req, res, next) => {
     var {
         address,
-        delivery_time,
         payment_type,
         i_take,
         note,
-        user_phone
+        user_phone,
+        seller_id
     } = req.body;
     let checkedProducts = [];
     let total_price = 0;
     let total_quantity = 0;
-    const order_products = await Orderproducts.findAll({
-        where: {
-            [Op.and]: [{ userId: req.user.id }, { is_ordered: false }]
-        }
-    })
-    let new_array = []
-    for (let i = 0; i < order_products.length; i++) {
-        if (i == 0) {
-            const objj = {
-                seller_id: order_products[i].seller_id,
-                orders: [order_products[i]]
-            }
-            new_array.push(objj);
-        } else {
-            let bool = true;
-            for (let j = 0; j < new_array.length; j++) {
-                if (new_array[j].seller_id == order_products[i].seller_id) {
-                    new_array[j].orders.push(order_products[i]);
-                    bool = false;
-                    break
-                }
-            }
-            if (bool) {
-                new_array.push({
-                    seller_id: order_products[i].seller_id,
-                    orders: [order_products[i]]
-                })
-            }
-        }
-    }
+    let where= {[Op.and]: [{ userId: req.user.id }, { is_ordered: false },{isSelected:true}]}
+    if(seller_id) where.seller_id=sellerId
+    const order_products = await Orderproducts.findAll({where})
     let orders_array = []
     if (order_products.length == 0) return next(new AppError("Select products to order", 400))
-    for (let i = 0; i < new_array.length; i++) {
-        let order_products = new_array[i].orders
-        for (var j = 0; j < order_products.length; j++) {
-            if (order_products[j].product_size_id != null) {
-                var product_size = await Productsizes.findOne({ where: { product_size_id: order_products[j].product_size_id }, include: { model: Stock, as: "product_size_stock" } })
-            }
-            var product = await Products.findOne({
-                where: { product_id: order_products[j].product_id },
-                include: {
-                    model: Stock,
-                    as: "product_stock"
-                }
-            });
-            if (product_size) {
-                if (product_size.product_size_stock.quantity < order_products[j].quantity) {
-                    order_products[j].quantity = product_size.product_size_stock.quantity
-                }
-                checkedProducts.push(product_size);
-                order_products[j].total_price = product_size.price * order_products[j].quantity
-            } else if (product) {
-                if (product.product_stock[0].quantity < order_products[j].quantity) {
-                    order_products[j].quantity = product.product_stock[0].quantity
-                }
-                order_products[j].total_price = product.price * order_products[j].quantity
-                checkedProducts.push(product);
-            }
-            total_quantity = total_quantity + order_products[j].quantity;
-            total_price = total_price + order_products[j].total_price;
+    for (var j = 0; j < order_products.length; j++) {
+        if (order_products[j].product_size_id != null) {
+            var product_size = await Productsizes.findOne({ where: { product_size_id: order_products[j].product_size_id }, include: { model: Stock, as: "product_size_stock" } })
         }
+        var product = await Products.findOne({
+            where: { product_id: order_products[j].product_id },
+            include: {
+                model: Stock,
+                as: "product_stock"
+            }
+        });
+        if (product_size) {
+            if (product_size.product_size_stock.quantity < order_products[j].quantity) {
+                order_products[j].quantity = product_size.product_size_stock.quantity
+            }
+            checkedProducts.push(product_size);
+            order_products[j].total_price = product_size.price * order_products[j].quantity
+        } else if (product) {
+            if (product.product_stock[0].quantity < order_products[j].quantity) {
+                order_products[j].quantity = product.product_stock[0].quantity
+            }
+            order_products[j].total_price = product.price * order_products[j].quantity
+            checkedProducts.push(product);
+        }
+        total_quantity = total_quantity + order_products[j].quantity;
+        total_price = total_price + order_products[j].total_price;
+    }
         let sellerId = null
-        if (new_array[i].seller_id) {
+        if (order_products[0].seller_id) {
             var seller = await Seller.findOne({ seller_id: new_array[i].seller_id })
             sellerId = seller.id
         }
@@ -84,19 +55,18 @@ exports.addMyOrders = catchAsync(async(req, res, next) => {
             userId: req.user.id,
             total_price,
             address,
-            user_name: req.user.username,
+            user_name: req.body.name,
             user_phone,
             payment_type,
             i_take,
             note,
             sellerId,
-            status: "waiting",
-            delivery_time,
+            status: "Garashylyar",
+            delivery_time:"9:00",
             total_quantity,
         });
         orders_array.push(order)
         for (var x = 0; x < order_products.length; x++) {
-            console.log(98, order_products)
             await Orderproducts.update({
                 orderId: order.id,
                 quantity: order_products[x].quantity,
@@ -104,7 +74,7 @@ exports.addMyOrders = catchAsync(async(req, res, next) => {
                 total_price: order_products[x].total_price,
                 is_ordered: true,
                 is_selected: false,
-                status: "waiting"
+                status: "Garashylyar"
             }, {
                 where: {
                     orderproduct_id: order_products[x].orderproduct_id,
@@ -113,8 +83,7 @@ exports.addMyOrders = catchAsync(async(req, res, next) => {
             });
 
         }
-    }
-
+    
     return res.status(200).json({
         status: 'Your orders accepted and will be delivered as soon as possible',
         data: {
@@ -122,7 +91,6 @@ exports.addMyOrders = catchAsync(async(req, res, next) => {
         },
     });
 })
-
 exports.getMyOrders = catchAsync(async(req, res, next) => {
     const limit = req.query.limit || 20;
     const offset = req.query.offset || 0;

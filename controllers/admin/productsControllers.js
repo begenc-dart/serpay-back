@@ -16,7 +16,7 @@ const {
     Images,
     Productsizes,
     Productcolor,
-    Colors,
+
     Details
 } = require('../../models');
 const include = [{
@@ -362,7 +362,6 @@ exports.addProduct = catchAsync(async(req, res, next) => {
     const category = await Categories.findOne({
         where: { category_id: req.body.category_id },
     });
-    req.body.isActive = false
     if (!category)
         return next(new AppError('Category did not found with that ID', 404));
     if (req.body.subcategory_id) {
@@ -385,38 +384,13 @@ exports.addProduct = catchAsync(async(req, res, next) => {
     req.body.is_new_expire = date.getTime()
     req.body.stock = Number(req.body.stock)
     req.body.categoryId = category.id;
-    if (req.body.price_usd) {
-        req.body.price_tm = null
-        req.body.price_tm_old = null
-        req.body.price_old = null
-        req.body.price_usd_old = null
-        let currency = await Currency.findOne()
-        if (req.body.discount > 0) {
-            req.body.price_usd_old = req.body.price_usd;
-            req.body.price_usd =
-                (req.body.price_usd_old / 100) *
-                (100 - req.body.discount);
-            req.body.price_old =
-                req.body.price_usd_old * currency.value;
-        }
-        req.body.price = req.body.price_usd * currency.value
-    } else {
-        req.body.price_usd = null;
-        req.body.price_usd_old = null;
-        req.body.price_old = null;
-        req.body.price_tm_old = null
-        if (req.body.discount > 0) {
-            req.body.price_tm_old = req.body.price_tm;
-            req.body.price_tm =
-                (req.body.price_tm_old / 100) *
-                (100 - req.body.discount);
-            req.body.price_old = req.body.price_tm_old;
-        }
-        req.body.price = req.body.price_tm;
+    req.body.price_old=null
+    if (Number(req.body.discount) > 0) {
+        req.body.price_old = req.body.price;
+        req.body.price =(req.body.price / 100) *(100 - req.body.discount);
     }
     const newProduct = await Products.create(req.body);
     let stock_data = {}
-    console.log(req.body)
     if (req.body.quantity) {
         stock_data.quantity = req.body.quantity
         stock_data.productId = newProduct.id
@@ -446,7 +420,6 @@ exports.editProductStatus = catchAsync(async(req, res, next) => {
 
     return res.status(200).send(product);
 });
-
 exports.deleteProduct = catchAsync(async(req, res, next) => {
     const product_id = req.params.id;
     const product = await Products.findOne({
@@ -520,7 +493,6 @@ exports.uploadProductImage = catchAsync(async(req, res, next) => {
     }
     return res.status(201).send(imagesArray);
 });
-
 exports.uploadProductImagebyColor = catchAsync(async(req, res, next) => {
     const product_color_id = req.params.id;
     const updateProductColor = await Productcolor.findOne({
@@ -565,7 +537,6 @@ exports.uploadDetails = catchAsync(async(req, res, next) => {
     }
     return res.status(201).send(detailsArray);
 })
-
 exports.deleteProductImage = catchAsync(async(req, res, next) => {
     const image = await Images.findOne({ where: { image_id: req.params.id } })
 
@@ -592,6 +563,12 @@ exports.setId = catchAsync(async(req, res, next) => {
         await image.update({ image_id: uuid.v4() })
     }
     return res.send("sucess")
+})
+exports.setDiscount=catchAsync(async(req,res,next)=>{   
+    const products=await Products.findAll({where:{sellerId:req.seller.id}})
+    for (const product of products){
+        await Products.update({price:(product/100)*(100-req.body.discount)},{where:{productId:product.id}})
+    }
 })
 const intoArray = (file) => {
     if (file[0].length == undefined) return file

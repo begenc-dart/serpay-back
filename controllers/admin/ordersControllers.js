@@ -21,6 +21,30 @@ exports.getAllOrders = catchAsync(async(req, res, next) => {
     if (status) {
         where.status = status
     }
+    if (keyword != "undefined") {
+        let keywordsArray = [];
+        keyword = keyword.toLowerCase();
+        keywordsArray.push('%' + keyword + '%');
+        keyword = '%' + capitalize(keyword) + '%';
+        keywordsArray.push(keyword);
+        where = {
+            [Op.or]: [{
+                    user_phone: {
+                        [Op.like]: {
+                            [Op.any]: keywordsArray,
+                        },
+                    },
+                },
+                {
+                    user_name: {
+                        [Op.like]: {
+                            [Op.any]: keywordsArray,
+                        },
+                    },
+                },
+            ],
+        };
+    }
     const orders = await Orders.findAll({
         where,
         order: [
@@ -143,3 +167,12 @@ exports.deleteOrderProduct = catchAsync(async(req, res, next) => {
 
     return res.status(200).json({ msg: 'Successfully Deleted' });
 });
+exports.deleteOrder=catchAsync(async(req, res, next) => {
+    const order=await Orders.findOne({ where: { order_id: req.params.id}})
+    await Orderproducts.destroy({where:{orderId:order.id}})
+    await order.destroy()
+    return res.send("sucess")
+});
+const capitalize = function(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+};

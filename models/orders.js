@@ -61,14 +61,6 @@ module.exports = (sequelize, DataTypes) => {
         delivery_time: {
             type: DataTypes.STRING,
             allowNull: false,
-            validate: {
-                notNull: {
-                    msg: "Delivery time cannot be null",
-                },
-                notEmpty: {
-                    msg: "Delivery time cannot be empty",
-                },
-            },
         },
         note: DataTypes.STRING
     }, {

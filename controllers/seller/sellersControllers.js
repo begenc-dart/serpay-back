@@ -2,8 +2,7 @@ const bcrypt = require('bcryptjs');
 const AppError = require('../../utils/appError');
 const catchAsync = require('../../utils/catchAsync');
 const { Seller } = require('../../models');
-const jwt = require("jsonwebtoken")
-
+const jwt = require("jsonwebtoken")                                                                   
 const signToken = (id) => {
     return jwt.sign({ id }, 'rustam', {});
 };
