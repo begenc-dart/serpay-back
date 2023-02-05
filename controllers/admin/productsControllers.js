@@ -404,6 +404,12 @@ exports.editProduct = catchAsync(async(req, res, next) => {
     });
     if (!product)
         return next(new AppError('Product did not found with that ID', 404));
+    req.body.price_old=null
+    if (req.body.discount > 0) {
+        req.body.price_old = req.body.price;
+        req.body.price =(req.body.price_old / 100) *(100 - req.body.discount);
+        req.body.price_old = req.body.price__old;
+    }
     await product.update(req.body);
     return res.status(200).send(product);
 });

@@ -140,34 +140,10 @@ exports.addProduct = catchAsync(async(req, res, next) => {
     req.body.is_new_expire = date.getTime()
     req.body.stock = Number(req.body.stock)
     req.body.categoryId = category.id;
-    if (req.body.price_usd) {
-        req.body.price_tm = null
-        req.body.price_tm_old = null
-        req.body.price_old = null
-        req.body.price_usd_old = null
-        let currency = await Currency.findOne()
-        if (req.body.discount > 0) {
-            req.body.price_usd_old = req.body.price_usd;
-            req.body.price_usd =
-                (req.body.price_usd_old / 100) *
-                (100 - req.body.discount);
-            req.body.price_old =
-                req.body.price_usd_old * currency.value;
-        }
-        req.body.price = req.body.price_usd * currency.value
-    } else {
-        req.body.price_usd = null;
-        req.body.price_usd_old = null;
-        req.body.price_old = null;
-        req.body.price_tm_old = null
-        if (req.body.discount > 0) {
-            req.body.price_tm_old = req.body.price_tm;
-            req.body.price_tm =
-                (req.body.price_tm_old / 100) *
-                (100 - req.body.discount);
-            req.body.price_old = req.body.price_tm_old;
-        }
-        req.body.price = req.body.price_tm;
+    req.body.price_old=null
+    if (Number(req.body.discount) > 0) {
+        req.body.price_old = req.body.price;
+        req.body.price =(req.body.price / 100) *(100 - req.body.discount);
     }
     req.body.sellerId = req.seller.id
     const newProduct = await Products.create(req.body);
