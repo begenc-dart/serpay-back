@@ -40,18 +40,19 @@ exports.updateMyPassword = catchAsync(async(req, res, next) => {
 });
 
 exports.updateMe = catchAsync(async(req, res, next) => {
-    const { name, address } = req.body;
-    if (!name || !address)
+    const { name_ru,name_tm, address_tm,address_ru } = req.body;
+    if (!name_ru || !name_tm || !address_ru|| !address_tm)
         return next(new AppError('Invalid credentials', 400));
-
     const seller = await Seller.findOne({ where: { seller_id: [req.seller.seller_id] } });
     let isActive = false
     await seller.update({
-        name,
+        name_tm,
+        name_ru,
+        address_ru,
+        address_tm,
         isActive,
         address
     });
-
     createSendToken(seller, 200, res);
 });
 
@@ -66,9 +67,6 @@ exports.deleteMe = catchAsync(async(req, res, next) => {
 exports.uploadSellerImage = catchAsync(async(req, res, next) => {
     const updateSeller = await Seller.findOne({ where: { seller_id: req.seller.seller_id } });
     req.files = Object.values(req.files)
-    if (!updateSeller)
-        return next(new AppError('Brand did not found with that ID', 404));
-
     const image = `${req.seller.seller_id}_seller.webp`;
     const photo = req.files[0].data
     let buffer = await sharp(photo).webp().toBuffer()

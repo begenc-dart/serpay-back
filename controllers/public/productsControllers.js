@@ -299,7 +299,7 @@ exports.searchLite = catchAsync(async(req, res, next) => {
 exports.getOneProduct = catchAsync(async(req, res, next) => {
     const product_id = req.params.id
     const oneProduct = await Products.findOne({
-        where: { product_id },
+        where: {[Op.or]:[{ product_id },{product_code:product_id}]},
         include: [{
                 model: Productcolor,
                 as: "product_colors",
