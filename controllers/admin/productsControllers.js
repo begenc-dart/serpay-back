@@ -573,8 +573,11 @@ exports.setId = catchAsync(async(req, res, next) => {
 exports.setDiscount=catchAsync(async(req,res,next)=>{   
     const products=await Products.findAll({where:{sellerId:req.seller.id}})
     for (const product of products){
-        await Products.update({price:(product.price/100)*(100-req.body.discount)},{where:{productId:product.id}})
+        await Products.update({
+        price:(product.price/100)*(100-req.body.discount),price_old:product.price,discount:req.body.discount},
+        {where:{productId:product.id}})
     }
+    return res.status(200).send("Sucess")
 })
 const intoArray = (file) => {
     if (file[0].length == undefined) return file
