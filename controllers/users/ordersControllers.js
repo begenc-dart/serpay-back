@@ -274,6 +274,10 @@ exports.getNotOrderedProducts = catchAsync(async(req, res, next) => {
                 as:"product_sizes"
             },
             {
+                model:Seller,
+                as:"seller"
+            },
+            {
                 model:Productcolor,
                 as:"product_colors",
                 include:[{
@@ -283,16 +287,12 @@ exports.getNotOrderedProducts = catchAsync(async(req, res, next) => {
                 {
                     model:Images,
                     as:"product_images"
-                }
+                },
             ]
             }
         ],
         });
-        if (!product)
-            return next(
-                new AppError(`Product did not found with your ID : ${i} `, 404)
-            );
-
+        if (!product) continue
         const {
             product_id,
             name_tm,
@@ -325,7 +325,8 @@ exports.getNotOrderedProducts = catchAsync(async(req, res, next) => {
             body_ru,
             image: order_products[i].image,
             quantity: order_products[i].quantity,
-            isSelected: order_products[i].isSelected
+            isSelected: order_products[i].isSelected,
+            seller_id: order_products[i].seller_id,
         };
         if(product.product_colors.length!=0){
             obj.product_color=product.product_colors
@@ -344,7 +345,36 @@ exports.getNotOrderedProducts = catchAsync(async(req, res, next) => {
         }
         checked_products.push(obj);
     }
-    return res.status(200).send({ not_ordered_products: checked_products })
+    let new_array = []
+    for (let i = 0; i < order_products.length; i++) {
+        if (i == 0) {
+            const seller=await Seller.findOne({where:{seller_id: order_products[i].seller_id}})
+            const objj = {
+                seller_id: order_products[i].seller_id,
+                orders: [order_products[i]],
+                seller
+            }
+            new_array.push(objj);
+        } else {
+            let bool = true;
+            for (let j = 0; j < new_array.length; j++) {
+                if (new_array[j].seller_id == order_products[i].seller_id) {
+                    new_array[j].orders.push(order_products[i]);
+                    bool = false;
+                    break
+                }
+            }
+            if (bool) {
+            const seller=await Seller.findOne({where:{seller_id: order_products[i].seller_id}})
+                new_array.push({
+                    seller_id: order_products[i].seller_id,
+                    orders: [order_products[i]],
+                    seller
+                })
+            }
+        }
+    }
+    return res.status(200).send({ not_ordered_products: new_array })
 })
 exports.deleteOrderedProduct = catchAsync(async(req, res, next) => {
     const { orderproduct_ids } = req.body
