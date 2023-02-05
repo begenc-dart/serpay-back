@@ -106,7 +106,7 @@ exports.getAllHistory = catchAsync(async(req, res, next) => {
 })
 exports.deleteMyHistory = catchAsync(async(req, res, next) => {
     const { history_ids } = req.body
-    console.log(136, req.body)
+    console.log(req.body)
     for (let i = 0; i < history_ids.length; i++) {
         const user_history = await Userhistory.findOne({ where: { history_id: history_ids[i] } })
         if (!user_history) return next(new AppError("User history not found with that id", 404))

@@ -36,14 +36,14 @@ exports.getAllBrands = catchAsync(async(req, res) => {
             ["name", "ASC"]
         ]
     }
-    // var keywordsArray = ["%%"]
-    // if (keyword && keyword != 'undefined') {
-    //     keywordsArray = []
-    //     keyword = keyword.toLowerCase();
-    //     keywordsArray.push('%' + keyword + '%');
-    //     keyword = '%' + capitalize(keyword) + '%';
-    //     keywordsArray.push(keyword);
-    // }
+    var keywordsArray = ["%%"]
+    if (keyword && keyword != 'undefined') {
+        keywordsArray = []
+        keyword = keyword.toLowerCase();
+        keywordsArray.push('%' + keyword + '%');
+        keyword = '%' + capitalize(keyword) + '%';
+        keywordsArray.push(keyword);
+    }
     const brands = await Brands.findAndCountAll({
         limit,
         offset,

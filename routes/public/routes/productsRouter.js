@@ -8,7 +8,8 @@ const {
     getProducts,
     getLikedProducts,
     getTopProducts,
-    searchLite
+    searchLite,
+    getMostSearches
 } = require('../../../controllers/public/productsControllers');
 
 const router = express.Router();
@@ -20,6 +21,7 @@ router.get("/search-lite", searchLite)
 router.get("/discount", discount)
 router.get("/new", newProducts)
 router.get("/action", actionProducts)
+router.get("/most-searches",getMostSearches)
 router.get("/:id", getOneProduct)
 router.post("/set-rating/:id")
 

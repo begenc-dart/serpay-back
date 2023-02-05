@@ -107,7 +107,7 @@ exports.updateProduct = catchAsync(async(req, res, next) => {
 exports.select = catchAsync(async(req, res, next) => {
     const order_products = await Orderproducts.findOne({ where: { orderproduct_id: req.params.id } })
     if (!order_products) return next(new AppError("Order product with that id not found"))
-    await order_products.update({ isSelected: req.body.isSelected })
+    await order_products.update({ isSelected: !order_products.isSelected })
     return res.status(200).send({ order_products })
 })
 exports.selectAll = catchAsync(async(req, res, next) => {

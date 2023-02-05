@@ -11,7 +11,7 @@ const {
 
 exports.getAllOrders = catchAsync(async(req, res, next) => {
     const limit = req.query.limit || 20;
-    let { user_phone, status } = req.query;
+    let { user_phone, status,keyword } = req.query;
     let offset = req.query.offset || 0
     var where = {};
     if (user_phone) {
@@ -76,7 +76,7 @@ exports.getOrderProducts = catchAsync(async(req, res, next) => {
         return next(new AppError(`Order did not found with that ID`, 404));
 
     let orderProducts = [];
-    return res.send(order)
+    // return res.send(order)
     for (var i = 0; i < order.order_products.length; i++) {
         for (var i = 0; i < order.order_products.length; i++) {
             const product = await Products.findOne({
@@ -111,7 +111,7 @@ exports.getOrderProducts = catchAsync(async(req, res, next) => {
         }
     }
 
-    res.status(200).send({ orderProducts });
+    res.status(200).send({ order,orderProducts });
 });
 
 exports.changeOrderStatus = catchAsync(async(req, res, next) => {
@@ -134,7 +134,7 @@ exports.changeOrderStatus = catchAsync(async(req, res, next) => {
             const product = await Products.findOne({
                 where: { product_id: order.order_products[i].product_id },
             });
-            const product_size = await Productsizes
+            // const product_size = await Productsizes
             const stock = await Stock.findOne({ where: { productId: product.id } });
             await stock.update({
                 stock_quantity: stock.stock_quantity - order.order_products[i].quantity,

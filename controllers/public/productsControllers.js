@@ -57,7 +57,7 @@ exports.getTopProducts = catchAsync(async(req, res) => {
     if (isAction) {
         where.push({ isAction })
     }
-    where.push({ isActive: true })
+    // where.push({ isActive: true })
     order.push(["sold_count", "DESC"])
     if (isAction) where.isAction = isAction;
     const products = await Products.findAll({
@@ -178,6 +178,7 @@ exports.searchProducts = catchAsync(async(req, res, next) => {
     ];
 
     let keywordsArray = [];
+    let keyword2=keyword
     keyword = keyword.toLowerCase();
     keywordsArray.push('%' + keyword + '%');
     keyword = '%' + capitalize(keyword) + '%';
@@ -225,8 +226,8 @@ exports.searchProducts = catchAsync(async(req, res, next) => {
         limit,
         offset
     })
-    const searchhistory=await Searchhistory.findOne({where:{name:keyword}})
-    if(!searchhistory) await Searchhistory.create({name:keyword,count:1})
+    const searchhistory=await Searchhistory.findOne({where:{name:keyword2}})
+    if(!searchhistory) await Searchhistory.create({name:keyword2,count:1})
     else await searchhistory.update({count:searchhistory.count+1})
 
     return res.status(200).send({ products, subcategories, seller });
@@ -596,7 +597,14 @@ exports.setRating = catchAsync(async(req, res, next) => {
     await product.update({ rating, rating_count: product.rating_count + 1 })
     return res.status(200).send({ product })
 })
-
+exports.getMostSearches=catchAsync(async(req,res,next)=>{
+    const searchhistory=await Searchhistory.findAll({
+        limit:9,
+        offset:0,
+        order:[["count","DESC"]]
+    })
+    return res.send(searchhistory)
+})
 function getWhere({ max_price, min_price, sex }) {
     let where = []
     if (max_price && min_price == "") {

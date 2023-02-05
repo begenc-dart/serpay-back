@@ -2,8 +2,8 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const AppError = require('../../utils/appError');
 const catchAsync = require('../../utils/catchAsync');
-const { Seller, Products, Productsizes, Productcolor, Images } = require('../../models');
-
+const { Seller, Products, Productsizes, Productcolor, Images,Stock,Orderproducts } = require('../../models');
+const {Op}=require("sequelize")
 exports.addSeller = catchAsync(async(req, res, next) => {
     let { password } = req.body
     req.body.password = await bcrypt.hash(password, 10)
@@ -14,6 +14,7 @@ exports.addSeller = catchAsync(async(req, res, next) => {
 exports.isActive = catchAsync(async(req, res, next) => {
     let { isActive, seller_id } = req.body
     let seller = await Seller.findOne({ where: { seller_id } })
+    console.log(req.body)
     if (!seller) {
         return next(new AppError("There is no seller with this id", 404))
     }
@@ -23,14 +24,41 @@ exports.isActive = catchAsync(async(req, res, next) => {
 exports.allSellers = catchAsync(async(req, res, next) => {
     let limit = req.query.limit || 20
     const offset = req.query.offset || 0
+    let {keyword}=req.query
+    var where = {};
+    if (keyword && keyword != "undefined") {
+        let keywordsArray = [];
+        keyword = keyword.toLowerCase();
+        keywordsArray.push('%' + keyword + '%');
+        keyword = '%' + capitalize(keyword) + '%';
+        keywordsArray.push(keyword);
+        where = {
+            [Op.or]: [{
+                    name_tm: {
+                        [Op.like]: {
+                            [Op.any]: keywordsArray,
+                        },
+                    },
+                },
+                {
+                    name_ru: {
+                        [Op.like]: {
+                            [Op.any]: keywordsArray,
+                        },
+                    },
+                },
+            ],
+        };
+    }
     let seller = await Seller.findAll({
         limit,
         offset,
+        where,
         order: [
             ["id", "DESC"]
         ]
     })
-    let count = await Seller.count()
+    let count = await Seller.count({where})
     return res.send({ seller, count })
 })
 exports.oneSeller = catchAsync(async(req, res, next) => {
@@ -50,9 +78,9 @@ exports.oneSeller = catchAsync(async(req, res, next) => {
     return res.send(seller)
 })
 exports.deleteSeller = catchAsync(async(req, res, next) => {
-    const seller = await Seller.findOne({ where: { seller_id: req.params.id }, include: { model: Products, as: "seller_products" } })
+    const seller = await Seller.findOne({ where: { seller_id: req.params.id }, include: { model: Products, as: "products" } })
     if (!seller) return next(new AppError("seller with that id not found", 404))
-    for (const one_product of seller.seller_products) {
+    for (const one_product of seller.products) {
         const product = await Products.findOne({
             where: { product_id: one_product.product_id },
             include: [{
@@ -94,5 +122,33 @@ exports.deleteSeller = catchAsync(async(req, res, next) => {
         }
         await product.destroy();
     }
-
+    await seller.destroy()
+    return res.send("Sucess")
 })
+exports.getAccount=catchAsync(async(req,res,next)=>{
+    const { startTime, endTime, seller_id } = req.query
+    // { startTime: '2022-08-09', endTime: '2022-08-27', phoneNumber: '' }
+if (startTime) {
+    console.log(301, "i am here")
+    let firstDate = new Date(startTime)
+    let secondDate = new Date(endTime)
+    let where={}
+    where.createdAt = {
+        [Op.gte]: firstDate,
+        [Op.lte]: secondDate
+    }
+    where.seller_id=seller_id
+    where.status="Gowshuryldy"
+}
+    let sum=0
+    const order_products=await Orderproducts.findAll({
+        where
+    })
+    for(const order_product of order_products){
+        sum+=order_product.total_price
+    }
+    return res.send({sum})
+})
+const capitalize = function(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+};

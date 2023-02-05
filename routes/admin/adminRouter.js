@@ -7,7 +7,7 @@ router.get("/get-me", protect, sendMe)
 router.get("/time", getTime)
 router.post("/time", changeTime)
 router.use("/banners", require("./routes/bannersRouter")) //test edildi
-router.use('/categories', require('./routes/categoriesRouter')); //delete test etmeli
+router.use('/categories', require('./routes/categoriesRouter')) ; //delete test etmeli
 router.use("/subcategories", require("./routes/subcategoriesRouter")) //test edildi
 router.use("/brands", require("./routes/brandsRouter")) //test etmeli
 router.use("/products", require("./routes/productsRouter")) //test etmeli

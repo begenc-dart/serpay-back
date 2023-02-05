@@ -41,8 +41,8 @@ exports.updateMyPassword = catchAsync(async(req, res, next) => {
 
 exports.updateMe = catchAsync(async(req, res, next) => {
     const { name_ru,name_tm, address_tm,address_ru } = req.body;
-    if (!name_ru || !name_tm || !address_ru|| !address_tm)
-        return next(new AppError('Invalid credentials', 400));
+    console.log(req.body)
+    if (!name_ru || !name_tm) return next(new AppError('Invalid credentials', 400));
     const seller = await Seller.findOne({ where: { seller_id: [req.seller.seller_id] } });
     let isActive = false
     await seller.update({
@@ -51,7 +51,6 @@ exports.updateMe = catchAsync(async(req, res, next) => {
         address_ru,
         address_tm,
         isActive,
-        address
     });
     createSendToken(seller, 200, res);
 });

@@ -28,7 +28,7 @@ router.get("/:product_id", getOneProduct)
 router.post("/add", addProduct)
 router.post("/add/size/:id", addSize)
 router.post("/add/color/:id", addColor)
-router.post("/add/size/to-color", addSizeToColor)
+router.post("/add/size/to-color/:id", addSizeToColor)
 router.patch("/color/:id", editColor)
 router.patch('/:id', editProduct);
 router.patch("/size/:id", editSize)
