@@ -55,7 +55,7 @@ exports.getAllChats = catchAsync(async(req, res, next) => {
 exports.getOneChat = catchAsync(async(req, res, next) => {
     const limit = req.query.limit || 20
     const offset = req.query.offset || 0
-    const user = await Users.findOne({ where: { nickname: req.query.nickname } })
+    const user = await Users.findOne({ where: { nickname: req.params.nickname } })
     const chats = await Chats.findAll({
         where: {
             [Op.or]: [{
@@ -87,5 +87,5 @@ exports.getOneChat = catchAsync(async(req, res, next) => {
     for (let i = 0; i < chats.length; i++) {
         if (chats[i].user_id1 == req.user.user_id) chats[i].isYou = true
     }
-    return res.status(200).send(chats)
+    return res.status(200).send(chats.reverse())
 })
