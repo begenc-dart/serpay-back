@@ -37,7 +37,6 @@ exports.updateMyPassword = catchAsync(async(req, res, next) => {
 });
 
 exports.updateMe = catchAsync(async(req, res, next) => {
-    console.log(req.body)
     const { username, nickname, } = req.body;
     if (!username || !nickname)
         return next(new AppError('Invalid credentials', 400));
@@ -53,7 +52,6 @@ exports.updateMe = catchAsync(async(req, res, next) => {
         username,
         nickname
     });
-    console.log(user)
     createSendToken(user, 200, res);
 });
 

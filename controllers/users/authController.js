@@ -1,12 +1,12 @@
 const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const { Users } = require('../../models');
+const { Users,Userfriends } = require('../../models');
 const { createSendToken } = require('./../../utils/createSendToken');
 const catchAsync = require('../../utils/catchAsync');
 const AppError = require('../../utils/appError');
 const randomstring = require("randomstring")
-
+const {Op}=require("sequelize")
 exports.verify_code = catchAsync(async(req, res, next) => {
     if (!req.body.user_checked_phone) {
         const { user_phone } = req.body;
@@ -119,7 +119,8 @@ exports.signup = catchAsync(async(req, res, next) => {
             password,
             nickname
         });
-
+        const admin= await Users.findOne({where:{nickname: "admin"}})
+        await Userfriends.create({user_id1:newUser.user_id, user_id2:admin.user_id})
         createSendToken(newUser, 201, res);
     } else {
         res.send(400).json({
@@ -130,12 +131,12 @@ exports.signup = catchAsync(async(req, res, next) => {
 
 exports.login = catchAsync(async(req, res, next) => {
     const { user_phone, password } = req.body;
-    console.log(req.headers["user-agent"])
+    console.log(req.body)
     if (!user_phone || !password) {
         return next(new AppError('Please provide phone number and password', 400));
     }
 
-    const user = await Users.findOne({ where: { user_phone } });
+    const user = await Users.findOne({ where:{[Op.or]:[{user_phone},{nickname:user_phone}]} });
     if (!user || !(await bcrypt.compare(password, user.password))) {
         return next(new AppError('Incorrect username or password', 401));
     }
