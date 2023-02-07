@@ -300,9 +300,9 @@ exports.searchLite = catchAsync(async(req, res, next) => {
 })
 exports.getOneProduct = catchAsync(async(req, res, next) => {
     const product_id = req.params.id
+
     let where={}
     if(isUUID(product_id)) {
-        console.log(305)
         where.product_id=product_id
     }
     else where.product_code=product_id
