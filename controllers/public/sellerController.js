@@ -40,7 +40,7 @@ exports.sellerProduct = catchAsync(async(req, res, next) => {
             as: "images"
         }]
     })
-    // product = await isLiked(product)
+    // product = awaxit isLiked(product)
     return res.send({ seller, product })
 })
 exports.sellerProductNew = catchAsync(async(req, res, next) => {
