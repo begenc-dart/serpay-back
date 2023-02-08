@@ -42,13 +42,13 @@ router.get("/get-me", protect, getMe)
 router.post('/login', login);
 router.get('/my-account', protect, getMe);
 router.patch('/update-me', protect, updateMe);
-router.delete('/delete-me', protect, deleteMe);
+router.post('/post/delete-me', protect, deleteMe);
 router.post("/upload-image", protect, uploadUserImage)
 router.patch('/update-my-password', protect, updateMyPassword);
 router.post("/history", protect, addMyHistory)
 router.get("/history", protect, getAllHistory)
-router.delete("/history", protect, deleteMyHistory)
-router.delete("/history/all", protect, deleteAllHistory)
+router.post("/delete/history", protect, deleteMyHistory)
+router.post("/delete/history/all", protect, deleteAllHistory)
 router.get('/my-cart', protect, getMyCart);
 router.post("/to-my-cart", protect, addMyCart)
 router.get("/is-ordered", protect, isOrdered)
@@ -56,15 +56,15 @@ router.patch("/my-cart/select/all",protect,selectAll)
 router.patch("/my-cart/select/:id", protect, select)
 router.patch("/my-cart/:id", protect, updateProduct)
 router.get("/not-ordered", protect, getNotOrderedProducts)
-router.delete("/not-ordered/:id", protect, deleteProduct)
-router.delete("/not-ordered/multiple/", protect, deleteSelected)
+router.post("/delete/not-ordered/:id", protect, deleteProduct)
+router.post("/delete/not-ordered/multiple/", protect, deleteSelected)
 router.post("/competition/add", protect, enterToCompetition)
 router.post("/competition/add-one", protect, addOne)
 router.post("/competition/link", protect, generateLink)
-router.delete("/competition/:id", protect, deleteCompetitor)
+router.post("/delete/competition/:id", protect, deleteCompetitor)
 router.get("/competition/me/:id", protect, getMyResult)
 router.get("/like", protect, getUsersLikedProducts)
 router.post("/like", protect, likeProduct)
-router.delete("/like/:id", protect, dislikeProduct)
+router.post("/delete/like/:id", protect, dislikeProduct)
 router.post("/card", protect, createCard)
 module.exports = router;

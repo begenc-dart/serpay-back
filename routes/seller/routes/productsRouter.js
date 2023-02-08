@@ -33,12 +33,12 @@ router.patch("/color/:id", editColor)
 router.patch('/:id', editProduct);
 router.patch("/size/:id", editSize)
 router.patch('/edit-status/:id', editProductStatus);
-router.delete('/:id', deleteProduct);
+router.post('/delete/:id', deleteProduct);
 router.post('/upload-image/:id', uploadProductImage);
 router.post("/upload-image/by-color/:id", uploadProductImagebyColor)
 router.post("/upload-details/:id", uploadDetails)
 router.post("/discount",setDiscount)
-router.delete("/image/:id", deleteProductImage)
-router.delete("/detail/:id", deleteDetailImage)
-router.delete("/color/:id", deleteProductColor)
+router.post("/delete/image/:id", deleteProductImage)
+router.post("/delete/detail/:id", deleteDetailImage)
+router.post("/delete/color/:id", deleteProductColor)
 module.exports = router;

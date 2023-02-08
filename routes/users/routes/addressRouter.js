@@ -13,6 +13,6 @@ router.post("/", addMyAddress)
 router.get("/", getAllAddress)
 router.patch("/:id", editMyAddress)
 router.get("/:id", getAddress)
-router.delete("/:id", deleteMyAddress)
+router.post("/delete/:id", deleteMyAddress)
 
 module.exports = router

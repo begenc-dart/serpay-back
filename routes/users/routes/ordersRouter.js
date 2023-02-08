@@ -11,7 +11,7 @@ const {
 router.post('/add', addMyOrders);
 
 router.get('/', getMyOrders);
-router.delete("/", deleteOrderedProduct)
-router.delete("/all", deleteAllOrderedProducts)
+router.post("/delete", deleteOrderedProduct)
+router.post("/delete/all", deleteAllOrderedProducts)
 
 module.exports = router
