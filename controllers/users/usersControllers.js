@@ -153,12 +153,10 @@ exports.addOne = catchAsync(async(req, res, next) => {
             count: sharing_user.count + 1
         })
     }
-
     return res.status(200).send({ sharing_user, new_entered_user })
 })
 exports.deleteCompetitor = catchAsync(async(req, res, next) => {
     const sharing_user = await Sharingusers.findOne({ where: { userId: req.user.id, freeproductId: req.params.id } })
-
     sharing_user.destroy()
     return res.status(200).send({ msg: "Successfully deleted" })
 })

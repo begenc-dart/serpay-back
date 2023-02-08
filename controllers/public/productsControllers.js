@@ -32,6 +32,25 @@ exports.getProducts = catchAsync(async(req, res) => {
     });
     return res.status(200).json(products);
 });
+exports.getOwnerProducts = catchAsync(async(req, res) => {
+    const limit = req.query.limit || 10;
+    const { offset } = req.query;
+    var order
+    const products = await Products.findAll({
+        isActive: true,
+        order,
+        limit,
+        offset,
+        include: [{
+            model: Images,
+            as: "images"
+        }, ],
+        where:{
+            sellerId:null
+        }
+    });
+    return res.status(200).json(products);
+});
 exports.getTopProducts = catchAsync(async(req, res) => {
     const limit = req.query.limit || 10;
     const offset = req.query.offset || 0;
