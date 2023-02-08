@@ -40,7 +40,8 @@ exports.getAllChats = catchAsync(async(req, res, next) => {
                     user_id2: req.user.user_id
                 }
             ]
-        }
+        },
+        order:[["id","DESC"]]
     })
     for (let i = 0; i < my_chats.length; i++) {
         const user1 = await Users.findOne({ where: { user_id: my_chats[i].user_id1 } })
@@ -88,4 +89,37 @@ exports.getOneChat = catchAsync(async(req, res, next) => {
         if (chats[i].user_id1 == req.user.user_id) chats[i].isYou = true
     }
     return res.status(200).send(chats.reverse())
+})
+exports.deleteFriendChat = catchAsync(async(req,res,next)=>{
+    const userfriend=await Userfriends.findOne({
+        where:{
+            user_id1:req.body.user_id1,user_id2:req.body.user_id2
+        }
+    })
+    if(!userfriend) return next(new AppError("There is no chat with that id"),404)
+    await Chats.destroy({
+        where: {
+            [Op.or]: [{
+                    [Op.and]: [{
+                            user_id1: req.body.user_id1,
+                        },
+                        {
+                            user_id2: req.body.user_id2
+                        }
+                    ]
+                },
+                {
+                    [Op.and]: [{
+                            user_id1: req.body.user_id2,
+                        },
+                        {
+                            user_id2: req.body.user_id1
+                        }
+                    ]
+                }
+            ]
+        }
+    })
+    await userfriend.destroy()
+    return res.send("Sucess")
 })

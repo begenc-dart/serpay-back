@@ -8,11 +8,6 @@ module.exports = (io) => {
     let isNewMessage = false
     const express = require("express");
     io.on('connection', async(socket) => {
-        socket.on('new-user', async(name) => {
-            await Chats.create({ user: socket.id })
-            users[socket.id] = socket.id
-            socket.emit("new-user-login", { id: socket.id })
-        })
         socket.on("login", async({ user_id }) => {
             console.log("login",user_id)
             const user = await Users.findOne({ where: { user_id } })
@@ -54,14 +49,6 @@ module.exports = (io) => {
                 console.log("goni yzyna gitya")
                 socket.broadcast.to(receiving_user.lastSocketId).emit("receive-message", { nickname: sending_user.nickname, message })
             } 
-        })
-        socket.on("admin-login", async() => {
-            adminOnline = true
-            adminSocket = socket.id
-            if (isNewMessage) {
-                socket.emit("new-messages")
-                isNewMessage = false
-            }
         })
         socket.on('disconnect', () => {
             if (adminSocket == socket.id) {
