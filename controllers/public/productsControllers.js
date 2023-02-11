@@ -236,13 +236,13 @@ exports.searchProducts = catchAsync(async(req, res, next) => {
     delete where.isActive
     const subcategories = await Subcategories.findAll({
         where,
-        order,
+        order:[["createdAt","DESC"]],
         limit,
         offset
     })
     const seller = await Seller.findAll({
         where,
-        order,
+        order:[["createdAt","DESC"]],
         limit,
         offset
     })
