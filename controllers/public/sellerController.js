@@ -33,15 +33,52 @@ exports.sellerProduct = catchAsync(async(req, res, next) => {
     if (!seller) {
         return next(new AppError(`Seller with id ${seller_id} not found`))
     }
-    const product = await Products.findAndCountAll({
-        where: { sellerId: seller.id },
+    const {sort,discount,isAction}=req.query
+    
+    let order, where = []
+    // where.push({ isActive: true })
+    where=getWhere(req.query)
+    if (sort == 1) {
+        order = [
+            ['price', 'DESC']
+        ];
+    } else if (sort == 0) {
+        order = [
+            ['price', 'ASC']
+        ];
+    } else if (sort == 3) {
+        order = [
+            ["sold_count", "DESC"]
+        ]
+    } else order = [
+        ['updatedAt', 'DESC']
+    ];
+
+    if (discount && discount != "false") {
+        let discount = {
+            [Op.ne]: 0
+        }
+        where.push({ discount })
+    }
+    if (isAction) {
+        where.push({ isAction })
+    }
+    where.push({ sellerId: seller.id })
+    order.push(["images", "id", "DESC"])
+    const productss = await Products.findAll({
+        where,
         include: [{
             model: Images,
             as: "images"
         }]
     })
+    const count = await Products.count({ where })
+    const products={
+        data:productss,
+        count
+    }
     // product = awaxit isLiked(product)
-    return res.send({ seller, product })
+    return res.send({ seller, products })
 })
 exports.sellerProductNew = catchAsync(async(req, res, next) => {
     let seller_id = req.params.id

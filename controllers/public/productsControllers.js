@@ -85,7 +85,7 @@ exports.getTopProducts = catchAsync(async(req, res) => {
     // where.push({ isActive: true })
     order.push(["sold_count", "DESC"])
     if (isAction) where.isAction = isAction;
-    const productss = await Products.findAndCountAll({
+    const productss = await Products.findAll({
         limit,
         offset,
         order,
@@ -100,7 +100,7 @@ exports.getTopProducts = catchAsync(async(req, res) => {
         count,
         rows:productss
     }
-    return res.status(200).json(products);
+    return res.status(200).send(products);
 });
 exports.getLikedProducts = catchAsync(async(req, res) => {
     const limit = req.query.limit || 10;
