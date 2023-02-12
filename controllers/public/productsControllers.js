@@ -95,10 +95,10 @@ exports.getTopProducts = catchAsync(async(req, res) => {
 exports.getLikedProducts = catchAsync(async(req, res) => {
     const limit = req.query.limit || 10;
     const offset = req.query.offset || 0;
-    const { sort, isAction, max_price, min_price, discount, sex } = req.query
+    const { sort, isAction, max_price, min_price, discount, sex,isNew } = req.query
     let order, where = []
+    where=getWhere(req.query)
     where.push({ isActive: true })
-
     if (sort == 1) {
         order = [
             ['price', 'DESC']
@@ -114,45 +114,6 @@ exports.getLikedProducts = catchAsync(async(req, res) => {
     } else order = [
         ['updatedAt', 'DESC']
     ];
-    if (max_price && min_price == "") {
-        let price = {
-            [Op.lte]: max_price
-        }
-        where.push({ price })
-    } else if (max_price == "" && min_price) {
-        let price = {
-            [Op.gte]: min_price
-        }
-        where.push({ price })
-
-    } else if (max_price && min_price) {
-        let price = {
-            [Op.and]: [{
-                    price: {
-                        [Op.gte]: min_price
-                    }
-                },
-                {
-                    price: {
-                        [Op.lte]: max_price
-                    }
-                }
-            ],
-        }
-        where.push(price)
-    }
-    if (sex) {
-        sex.split = (",")
-        var array = []
-        for (let i = 0; i < sex.length; i++) {
-            array.push({
-                sex: {
-                    [Op.eq]: sex[i]
-                }
-            })
-        }
-        where.push(array)
-    }
     if (discount && discount != "false") {
         let discount = {
             [Op.ne]: 0
@@ -163,9 +124,7 @@ exports.getLikedProducts = catchAsync(async(req, res) => {
         where.push({ isAction })
     }
     order.push(["likeCount", "DESC"])
-    if (isAction) where.isAction = isAction
     const products = await Products.findAll({
-        isActive: true,
         order,
         limit,
         offset,
@@ -221,7 +180,7 @@ exports.searchProducts = catchAsync(async(req, res, next) => {
             },
         ],
     }
-    const products = await Products.findAndCountAll({
+    const productss = await Products.findAll({
         where,
         order,
         limit,
@@ -233,6 +192,7 @@ exports.searchProducts = catchAsync(async(req, res, next) => {
             }
         ]
     });
+    const count=await Products.count({where})
     delete where.isActive
     const subcategories = await Subcategories.findAndCountAll({
         where,
@@ -246,6 +206,10 @@ exports.searchProducts = catchAsync(async(req, res, next) => {
         limit,
         offset
     })
+    const products={
+        data:productss,
+        count:count
+    }
     const searchhistory=await Searchhistory.findOne({where:{name:keyword2}})
     if(!searchhistory) await Searchhistory.create({name:keyword2,count:1})
     else await searchhistory.update({count:searchhistory.count+1})
@@ -433,7 +397,6 @@ exports.discount = catchAsync(async(req, res, next) => {
     }
     if (isAction) where.push({ isAction })
     where.push({ discount })
-    console.log(where)
     order.push(["images", "id", "DESC"])
     const discount_products = await Products.findAndCountAll({
         where,
@@ -445,16 +408,15 @@ exports.discount = catchAsync(async(req, res, next) => {
             as: "images"
         }],
     });
-
     return res.status(200).send({ discount_products })
 })
 exports.actionProducts = catchAsync(async(req, res, next) => {
     const limit = req.query.limit || 20;
     const offset = req.query.offset || 0;
-    const { sort, max_price, min_price, discount, sex } = req.query
+    const { sort, discount } = req.query
     let order, where = []
     // where.push({ isActive: true })
-
+    where=getWhere(req.query)
     if (sort == 1) {
         order = [
             ['price', 'DESC']
@@ -470,45 +432,6 @@ exports.actionProducts = catchAsync(async(req, res, next) => {
     } else order = [
         ['updatedAt', 'DESC']
     ];
-    if (max_price && min_price == "") {
-        let price = {
-            [Op.lte]: max_price
-        }
-        where.push({ price })
-    } else if (max_price == "" && min_price) {
-        let price = {
-            [Op.gte]: min_price
-        }
-        where.push({ price })
-
-    } else if (max_price && min_price) {
-        let price = {
-            [Op.and]: [{
-                    price: {
-                        [Op.gte]: min_price
-                    }
-                },
-                {
-                    price: {
-                        [Op.lte]: max_price
-                    }
-                }
-            ],
-        }
-        where.push(price)
-    }
-    if (sex) {
-        sex.split = (",")
-        var array = []
-        for (let i = 0; i < sex.length; i++) {
-            array.push({
-                sex: {
-                    [Op.eq]: sex[i]
-                }
-            })
-        }
-        where.push(array)
-    }
     if (discount && discount != "false") {
         let discount = {
             [Op.ne]: 0
@@ -534,7 +457,7 @@ exports.newProducts = catchAsync(async(req, res) => {
     const { sort, isAction, max_price, min_price, discount, sex } = req.query
     let order, where = []
     // where.push({ isActive: true })
-
+    where=getWhere(req.query)
     if (sort == 1) {
         order = [
             ['price', 'DESC']
@@ -550,45 +473,7 @@ exports.newProducts = catchAsync(async(req, res) => {
     } else order = [
         ['updatedAt', 'DESC']
     ];
-    if (max_price && min_price == "") {
-        let price = {
-            [Op.lte]: max_price
-        }
-        where.push({ price })
-    } else if (max_price == "" && min_price) {
-        let price = {
-            [Op.gte]: min_price
-        }
-        where.push({ price })
 
-    } else if (max_price && min_price) {
-        let price = {
-            [Op.and]: [{
-                    price: {
-                        [Op.gte]: min_price
-                    }
-                },
-                {
-                    price: {
-                        [Op.lte]: max_price
-                    }
-                }
-            ],
-        }
-        where.push(price)
-    }
-    if (sex) {
-        sex.split = (",")
-        var array = []
-        for (let i = 0; i < sex.length; i++) {
-            array.push({
-                sex: {
-                    [Op.eq]: sex[i]
-                }
-            })
-        }
-        where.push(array)
-    }
     if (discount && discount != "false") {
         let discount = {
             [Op.ne]: 0
@@ -630,7 +515,7 @@ exports.getMostSearches=catchAsync(async(req,res,next)=>{
     })
     return res.send(searchhistory)
 })
-function getWhere({ max_price, min_price, sex }) {
+function getWhere({ max_price, min_price, sex,isNew }) {
     let where = []
     if (max_price && min_price == "") {
         let price = {
@@ -671,7 +556,7 @@ function getWhere({ max_price, min_price, sex }) {
             })
         }
         where.push(array)
-
+        if(isNew) where.push({isNew})
     }
     return where
 }
