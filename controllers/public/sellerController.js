@@ -34,7 +34,7 @@ exports.sellerProduct = catchAsync(async(req, res, next) => {
         return next(new AppError(`Seller with id ${seller_id} not found`))
     }
     const {sort,discount,isAction}=req.query
-    
+
     let order, where = []
     // where.push({ isActive: true })
     where=getWhere(req.query)
@@ -98,4 +98,49 @@ exports.sellerProductNew = catchAsync(async(req, res, next) => {
 })
 const capitalize = function(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
+}
+function getWhere({ max_price, min_price, sex,isNew }) {
+    let where = []
+    if (max_price && min_price == "") {
+        let price = {
+            [Op.lte]: max_price
+        }
+
+        where.push({ price })
+    } else if (max_price == "" && min_price) {
+        let price = {
+            [Op.gte]: min_price
+        }
+        where.push({ price })
+
+    } else if (max_price && min_price) {
+        let price = {
+            [Op.and]: [{
+                    price: {
+                        [Op.gte]: min_price
+                    }
+                },
+                {
+                    price: {
+                        [Op.lte]: max_price
+                    }
+                }
+            ],
+        }
+        where.push(price)
+    }
+    if (sex) {
+        sex.split = (",")
+        var array = []
+        for (let i = 0; i < sex.length; i++) {
+            array.push({
+                sex: {
+                    [Op.eq]: sex[i]
+                }
+            })
+        }
+        where.push(array)
+        if(isNew) where.push({isNew})
+    }
+    return where
 }

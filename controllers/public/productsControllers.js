@@ -35,9 +35,31 @@ exports.getProducts = catchAsync(async(req, res) => {
 exports.getOwnerProducts = catchAsync(async(req, res) => {
     const limit = req.query.limit || 10;
     const { offset } = req.query;
-    var order
+    const {sort,discount,isAction}=req.query
+    let order, where = []
+    if (sort == 1) {
+        order = [
+            ['price', 'DESC']
+        ];
+    } else if (sort == 0) {
+        order = [
+            ['price', 'ASC']
+        ];
+    } else order = [
+        ['updatedAt', 'DESC']
+    ];
+    where = getWhere(req.query)
+    if (discount && discount != "false") {
+        let discount = {
+            [Op.ne]: 0
+        }
+        where.push({ discount })
+    }
+    if (isAction) {
+        where.push({ isAction })
+    }
+    where.push({sellerId:null})
     const productss = await Products.findAll({
-        isActive: true,
         order,
         limit,
         offset,
@@ -45,11 +67,9 @@ exports.getOwnerProducts = catchAsync(async(req, res) => {
             model: Images,
             as: "images"
         }, ],
-        where:{
-            sellerId:null
-        }
+        where
     });
-    const count=await Products.count({where:{sellerId:null}})
+    const count=await Products.count({where})
     const products={
         count,
         rows:productss
