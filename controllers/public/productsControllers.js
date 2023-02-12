@@ -36,7 +36,7 @@ exports.getOwnerProducts = catchAsync(async(req, res) => {
     const limit = req.query.limit || 10;
     const { offset } = req.query;
     var order
-    const products = await Products.findAndCountAll({
+    const productss = await Products.findAll({
         isActive: true,
         order,
         limit,
@@ -49,6 +49,11 @@ exports.getOwnerProducts = catchAsync(async(req, res) => {
             sellerId:null
         }
     });
+    const count=await Products.count({where:{sellerId:null}})
+    const products={
+        count,
+        rows:productss
+    }
     return res.status(200).json(products);
 });
 exports.getTopProducts = catchAsync(async(req, res) => {
@@ -80,7 +85,7 @@ exports.getTopProducts = catchAsync(async(req, res) => {
     // where.push({ isActive: true })
     order.push(["sold_count", "DESC"])
     if (isAction) where.isAction = isAction;
-    const products = await Products.findAndCountAll({
+    const productss = await Products.findAndCountAll({
         limit,
         offset,
         order,
@@ -90,6 +95,11 @@ exports.getTopProducts = catchAsync(async(req, res) => {
             as: "images"
         },
     });
+    const count=await Products.count({where:{sellerId:null}})
+    const products={
+        count,
+        rows:productss
+    }
     return res.status(200).json(products);
 });
 exports.getLikedProducts = catchAsync(async(req, res) => {
@@ -98,7 +108,7 @@ exports.getLikedProducts = catchAsync(async(req, res) => {
     const { sort, isAction, max_price, min_price, discount, sex,isNew } = req.query
     let order, where = []
     where=getWhere(req.query)
-    where.push({ isActive: true })
+    // where.push({ isActive: true })
     if (sort == 1) {
         order = [
             ['price', 'DESC']
@@ -124,7 +134,7 @@ exports.getLikedProducts = catchAsync(async(req, res) => {
         where.push({ isAction })
     }
     order.push(["likeCount", "DESC"])
-    const products = await Products.findAll({
+    const productss = await Products.findAll({
         order,
         limit,
         offset,
@@ -134,6 +144,11 @@ exports.getLikedProducts = catchAsync(async(req, res) => {
             as: "images"
         },
     });
+    const count=await Products.count({where:{sellerId:null}})
+    const products={
+        count,
+        rows:productss
+    }
     return res.status(200).json(products);
 });
 // Search
@@ -398,7 +413,7 @@ exports.discount = catchAsync(async(req, res, next) => {
     if (isAction) where.push({ isAction })
     where.push({ discount })
     order.push(["images", "id", "DESC"])
-    const discount_products = await Products.findAndCountAll({
+    const discount_products = await Products.findAll({
         where,
         order,
         limit,
@@ -408,7 +423,12 @@ exports.discount = catchAsync(async(req, res, next) => {
             as: "images"
         }],
     });
-    return res.status(200).send({ discount_products })
+    const count=await Products.count({where:{sellerId:null}})
+    const products={
+        count,
+        rows:discount_products
+    }
+    return res.status(200).send({ discount_products:products })
 })
 exports.actionProducts = catchAsync(async(req, res, next) => {
     const limit = req.query.limit || 20;
@@ -439,7 +459,7 @@ exports.actionProducts = catchAsync(async(req, res, next) => {
         where.push({ discount })
     }
     where.push({ isAction: true })
-    let action_products = await Products.findAndCountAll({
+    let action_products = await Products.findAll({
         where,
         order,
         limit,
@@ -449,12 +469,17 @@ exports.actionProducts = catchAsync(async(req, res, next) => {
             as: "images"
         }, ]
     });
-    return res.status(200).send({ action_products })
+    const count=await Products.count({where:{sellerId:null}})
+    const products={
+        count,
+        rows:action_products
+    }
+    return res.status(200).send({ action_products:products })
 })
 exports.newProducts = catchAsync(async(req, res) => {
     const limit = req.query.limit || 10;
     const offset = req.query.offset || 0;
-    const { sort, isAction, max_price, min_price, discount, sex } = req.query
+    const { sort, isAction, discount } = req.query
     let order, where = []
     // where.push({ isActive: true })
     where=getWhere(req.query)
