@@ -50,7 +50,7 @@ exports.getCategoryProducts = catchAsync(async(req, res, next) => {
         ['updatedAt', 'DESC']
     ];
     order.push(["images", "id", "DESC"])
-    const products = await Products.findAll({
+    const products = await Products.findAndCountAll({
         where: { categoryId: category.id }, //isActive goy sonundan
         order,
         limit,

@@ -266,6 +266,7 @@ exports.getNotOrderedProducts = catchAsync(async(req, res, next) => {
     if(req.query.isSelected) where.isSelected=req.query.isSelected 
     const order_products = await Orderproducts.findAll({ where, limit, offset })
     const checked_products = []
+
     for (var i = 0; i < order_products.length; i++) {
         const product = await Products.findOne({
             where: { product_id: order_products[i].product_id },
@@ -346,29 +347,29 @@ exports.getNotOrderedProducts = catchAsync(async(req, res, next) => {
         checked_products.push(obj);
     }
     let new_array = []
-    for (let i = 0; i < order_products.length; i++) {
+    for (let i = 0; i < checked_products.length; i++) {
         if (i == 0) {
-            const seller=await Seller.findOne({where:{seller_id: order_products[i].seller_id}})
+            const seller=await Seller.findOne({where:{seller_id: checked_products[i].seller_id}})
             const objj = {
-                seller_id: order_products[i].seller_id,
-                orders: [order_products[i]],
+                seller_id: checked_products[i].seller_id,
+                orders: [checked_products[i]],
                 seller
             }
             new_array.push(objj);
         } else {
             let bool = true;
             for (let j = 0; j < new_array.length; j++) {
-                if (new_array[j].seller_id == order_products[i].seller_id) {
-                    new_array[j].orders.push(order_products[i]);
+                if (new_array[j].seller_id == checked_products[i].seller_id) {
+                    new_array[j].orders.push(checked_products[i]);
                     bool = false;
                     break
                 }
             }
             if (bool) {
-            const seller=await Seller.findOne({where:{seller_id: order_products[i].seller_id}})
+            const seller=await Seller.findOne({where:{seller_id: checked_products[i].seller_id}})
                 new_array.push({
-                    seller_id: order_products[i].seller_id,
-                    orders: [order_products[i]],
+                    seller_id: checked_products[i].seller_id,
+                    orders: [checked_products[i]],
                     seller
                 })
             }
