@@ -42,7 +42,7 @@ router.get("/get-me", protect, getMe)
 router.post('/login', login);
 router.get('/my-account', protect, getMe);
 router.patch('/update-me', protect, updateMe);
-router.post('/post/delete-me', protect, deleteMe);
+router.post('/delete-me', protect, deleteMe);
 router.post("/upload-image", protect, uploadUserImage)
 router.patch('/update-my-password', protect, updateMyPassword);
 router.post("/history", protect, addMyHistory)
