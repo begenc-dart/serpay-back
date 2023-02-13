@@ -91,7 +91,10 @@ module.exports = (sequelize, DataTypes) => {
         price_usd_old: DataTypes.REAL,
         discount: DataTypes.REAL,
         product_code: DataTypes.STRING,
-        isActive: DataTypes.BOOLEAN,
+        isActive: {
+            type:DataTypes.BOOLEAN,
+            defaultValue:true
+        },
         sex: {
             type: DataTypes.STRING,
             defaultValue: "-"
