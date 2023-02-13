@@ -17,7 +17,11 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: DataTypes.UUIDV4
         },
         userId: DataTypes.INTEGER,
-        productId: DataTypes.STRING
+        productId: DataTypes.STRING,
+        isSelected:{
+            type:DataTypes.BOOLEAN,
+            defaultValue:false
+        }
     }, {
         sequelize,
         tableName: "userhistories",

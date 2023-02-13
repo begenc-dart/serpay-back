@@ -93,12 +93,18 @@ exports.getAllHistory = catchAsync(async(req, res, next) => {
         }
     })
     for (let i = 0; i < user_history.length; i++) {
-        const liked_ids = await Likedproducts.findOne({
-            where: {
-                [Op.and]: [{ userId: req.user.id }, { productId: user_history[i].product.id }]
-            }
-        })
-        if (liked_ids) user_history[i].product.isLiked = true
+        if(user_history[i].product != null){
+            console.log(i,user_history[i].product!=null)
+            const liked_ids = await Likedproducts.findOne({
+                where: {
+                    [Op.and]: [{ userId: req.user.id }, { productId: user_history[i].productId }]
+                }
+            })
+            if (liked_ids) user_history[i].product.isLiked = true
+        }else{
+            user_history.splice(i,1)
+            i-=1
+        }
     }
     return res.status(200).send(user_history)
 })
