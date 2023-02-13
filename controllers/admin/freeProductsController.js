@@ -6,7 +6,7 @@ const sharp = require('sharp')
 const fs = require("fs")
 const { v4 } = require("uuid")
 exports.allFreeProducts = catchAsync(async(req, res, next) => {
-    const freeProduct = await Freeproducts.findAll({
+    const freeProduct = await Freeproducts.findAndCountAll({
         order: [
             ["id", "DESC"]
         ],
@@ -22,8 +22,16 @@ exports.addFreeProduct = catchAsync(async(req, res, next) => {
     const hour = req.body.time.split(":")
     const d = new Date(date[0], date[1] - 1, date[2], hour[0], hour[1]);
     req.body.expire_date = d
+
     const freeproduct = await Freeproducts.create(req.body)
     return res.status(201).send(freeproduct)
+})
+exports.getFreeProduct = catchAsync(async(req, res, next)=>{
+
+    const freeproduct = await Freeproducts.findOne({ where: { freeproduct_id:req.params.id },include:{model:Images,as:"images"} })
+    if (!freeproduct) return next(new AppError("Free product not found with that id", 404))
+``
+    return res.status(200).send(freeproduct)
 })
 exports.editFreeProduct = catchAsync(async(req, res, next) => {
     const freeproduct_id = req.params.id
@@ -66,6 +74,7 @@ exports.deleteFreeProduct = catchAsync(async(req, res, next) => {
     await freeproduct.destroy()
     return res.status(200).send({ msg: "Sucessfully deleted" })
 })
+
 const intoArray = (file) => {
     if (file[0].length == undefined) return file
     else return file[0]
