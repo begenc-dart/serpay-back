@@ -8,7 +8,6 @@ const fs = require("fs")
 const { Op } = require("sequelize")
 const signToken = (id) => {
     return jwt.sign({ id }, 'rustam', {
-        expiresIn: '24h',
     });
 };
 const createSendToken = (admin, statusCode, res) => {

@@ -9,7 +9,11 @@ exports.allFreeProducts = catchAsync(async(req, res, next) => {
     const freeProduct = await Freeproducts.findAll({
         order: [
             ["id", "DESC"]
-        ]
+        ],
+        include:{
+            model:Images,
+            as:"images"
+        }
     })
     return res.status(200).send(freeProduct)
 })

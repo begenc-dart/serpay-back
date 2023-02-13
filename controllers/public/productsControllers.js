@@ -430,7 +430,7 @@ exports.discount = catchAsync(async(req, res, next) => {
         [Op.ne]: 0
     }
     if (isAction) where.push({ isAction })
-    where.push({ discount })
+    where.push({ discount})
     order.push(["images", "id", "DESC"])
     const discount_products = await Products.findAll({
         where,
@@ -442,7 +442,7 @@ exports.discount = catchAsync(async(req, res, next) => {
             as: "images"
         }],
     });
-    const count=await Products.count({where:{sellerId:null}})
+    const count=await Products.count({where})
     const products={
         count,
         rows:discount_products
@@ -452,26 +452,26 @@ exports.discount = catchAsync(async(req, res, next) => {
 exports.actionProducts = catchAsync(async(req, res, next) => {
     const limit = req.query.limit || 20;
     const offset = req.query.offset || 0;
-    const { sort, discount } = req.query
+    const { discount } = req.query
     let order, where = []
     // where.push({ isActive: true })
     where=getWhere(req.query)
-    if (sort == 1) {
-        order = [
-            ['price', 'DESC']
-        ];
-    } else if (sort == 0) {
-        order = [
-            ['price', 'ASC']
-        ];
-    } else if (sort == 3) {
-        order = [
-            ["sold_count", "DESC"]
-        ]
-    } else order = [
-        ['updatedAt', 'DESC']
-    ];
-
+    // if (sort == 1) {
+    //     order = [
+    //         ['price', 'DESC']
+    //     ];
+    // } else if (sort == 0) {
+    //     order = [
+    //         ['price', 'ASC']
+    //     ];
+    // } else if (sort == 3) {
+    //     order = [
+    //         ["sold_count", "DESC"]
+    //     ]
+    // } else order = [
+    //     ['updatedAt', 'DESC']
+    // ];
+    order=getOrder(req.query)
     if (discount && discount != "false") {
         let discount = {
             [Op.ne]: 0
@@ -489,7 +489,7 @@ exports.actionProducts = catchAsync(async(req, res, next) => {
             as: "images"
         }, ]
     });
-    const count=await Products.count({where:{sellerId:null}})
+    const count=await Products.count({where})
     const products={
         count,
         rows:action_products
@@ -590,6 +590,24 @@ function getWhere({ max_price, min_price, sex,isNew }) {
         }
         where.push(price)
     }
-    where.push({isActive:true})
+    // where.push({isActive:true})
     return where
+}
+function getOrder({sort}){
+    let order=[]
+    if (sort == 1) {
+        order = [
+            ['price', 'DESC']
+        ];
+    } else if (sort == 0) {
+        order = [
+            ['price', 'ASC']
+        ];
+    } else if (sort == 3) {
+        order = [
+            ["sold_count", "DESC"]
+        ]
+    } else order = [
+        ['updatedAt', 'DESC']
+    ];
 }
