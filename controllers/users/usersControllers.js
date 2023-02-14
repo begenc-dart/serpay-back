@@ -69,9 +69,10 @@ exports.addMyHistory = catchAsync(async(req, res, next) => {
     req.body.userId = req.user.id
     const product = await Products.findOne({ where: { product_id: req.body.product_id } })
     req.body.productId = product.id
-    let address = await Userhistory.create(req.body)
+    let address=await Userhistory.findOne({where: { userId:req.user.id,productId:product.id}})
+    if(address) await address.update()
+    else address = await Userhistory.create(req.body)
     return res.status(201).send(address)
-
 })
 exports.getAllHistory = catchAsync(async(req, res, next) => {
     const limit = req.query.limit || 20
