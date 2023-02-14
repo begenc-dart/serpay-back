@@ -612,7 +612,7 @@ exports.getSubcategoryProducts = catchAsync(async(req, res, next) => {
     }
     where.subcategoryId = subcategory.id
     order.push(["images", "id", "DESC"])
-    let products = await Products.findAndCountAll({
+    let products = await Products.findAll({
         where, //isActive goy
         order,
         limit,

@@ -77,7 +77,7 @@ exports.getSubcategoryProducts = catchAsync(async(req, res, next) => {
     }
     where.subcategoryId = subcategory.id
     order.push(["images", "id", "DESC"])
-    const products = await Products.findAndCountAll({
+    const products = await Products.findAll({
         where, //isActive goy
         order,
         limit,
@@ -87,6 +87,6 @@ exports.getSubcategoryProducts = catchAsync(async(req, res, next) => {
             as: "images"
         }]
     });
-    const count = await Products.count({ where: { subcategoryId: subcategory.id } })
+    const count = await Products.count({ where })
     return res.status(200).send({ products, count, subcategory });
 });
