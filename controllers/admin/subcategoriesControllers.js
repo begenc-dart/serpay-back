@@ -84,7 +84,7 @@ exports.uploadSubcategoryImage = catchAsync(async(req, res, next) => {
     const image = `${subcategory_id}_subcategory.webp`;
     console.log(85, req.files)
     const photo = req.files[0].data
-    let buffer = await sharp(photo).webp().toBuffer()
+    let buffer = await sharp(photo).webp().toBuffer().resize(1080,720)
     await sharp(buffer).toFile(`static/${image}`);
 
     await subcategory.update({

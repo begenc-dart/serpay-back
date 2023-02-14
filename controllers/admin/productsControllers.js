@@ -446,7 +446,7 @@ exports.uploadProductImage = catchAsync(async(req, res, next) => {
         const image_id = v4()
         const image = `${image_id}_product.webp`;
         const photo = images.data
-        let buffer = await sharp(photo).webp().toBuffer()
+        let buffer = await sharp(photo).webp().toBuffer().resize(1080,720)
         await sharp(buffer).toFile(`static/${image}`);
         let newImage = await Images.create({ image, image_id, productId: updateProduct.id })
         imagesArray.push(newImage)
@@ -472,7 +472,7 @@ exports.uploadProductImagebyColor = catchAsync(async(req, res, next) => {
         const image_id = v4()
         const image = `${image_id}_product.webp`;
         const photo = images.data
-        let buffer = await sharp(photo).webp().toBuffer()
+        let buffer = await sharp(photo).webp().toBuffer().resize(1080,720)
         await sharp(buffer).toFile(`static/${image}`);
         let newImage = await Images.create({ image, image_id, productId: updateProductColor.main_product.id, productcolorId: updateProductColor.id })
         imagesArray.push(newImage)
@@ -489,7 +489,7 @@ exports.uploadDetails = catchAsync(async(req, res, next) => {
         const detail_id = v4()
         const image = `${detail_id}_detail.webp`;
         const photo = images.data
-        let buffer = await sharp(photo).webp().toBuffer()
+        let buffer = await sharp(photo).webp().toBuffer().resize(1080,720)
         await sharp(buffer).toFile(`static/${image}`);
         let newImage = await Details.create({ image, detail_id, productId: product.id })
         detailsArray.push(newImage)

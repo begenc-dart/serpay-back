@@ -202,7 +202,7 @@ exports.uploadBrandImage = catchAsync(async(req, res, next) => {
     const image = `${brand_id}_brand.webp`;
     const photo = req.files[0].data
     let buffer = await sharp(photo).webp().toBuffer()
-    await sharp(buffer).toFile(`static/${image}`);
+    await sharp(buffer).toFile(`static/${image}`).resize(1080,720);
 
     await updatedBrand.update({
         image,
