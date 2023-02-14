@@ -8,10 +8,9 @@ const {
     Productsizes,
     Images,
     Details,
-    Users,
     Likedproducts,
     Subcategories,
-    Orderproducts
+    Searchhistory
 } = require('../../models');
 const catchAsync = require('../../utils/catchAsync');
 const AppError = require('../../utils/appError');
@@ -37,6 +36,50 @@ exports.getProducts = catchAsync(async(req, res) => {
         where
     });
     products = await isLiked(products, req)
+    return res.status(200).json(products);
+});
+exports.getOwnerProducts = catchAsync(async(req, res) => {
+    const limit = req.query.limit || 10;
+    const { offset } = req.query;
+    const {sort,discount,isAction}=req.query
+    let order, where = []
+    if (sort == 1) {
+        order = [
+            ['price', 'DESC']
+        ];
+    } else if (sort == 0) {
+        order = [
+            ['price', 'ASC']
+        ];
+    } else order = [
+        ['updatedAt', 'DESC']
+    ];
+    where = getWhere(req.query)
+    if (discount && discount != "false") {
+        let discount = {
+            [Op.ne]: 0
+        }
+        where.push({ discount })
+    }
+    if (isAction) {
+        where.push({ isAction })
+    }
+    where.push({sellerId:null})
+    const productss = await Products.findAll({
+        order,
+        limit,
+        offset,
+        include: [{
+            model: Images,
+            as: "images"
+        }, ],
+        where
+    });
+    const count=await Products.count({where})
+    const products={
+        count,
+        rows:await isLiked(productss)
+    }
     return res.status(200).json(products);
 });
 exports.getOneProduct = catchAsync(async(req, res, next) => {
@@ -140,7 +183,7 @@ exports.getTopProducts = catchAsync(async(req, res) => {
 
     if (isAction) where.push({ isAction })
     order.push(["sold_count", "DESC"])
-    let products = await Products.findAll({
+    let productss = await Products.findAll({
         isActive: true,
         limit,
         offset,
@@ -150,30 +193,20 @@ exports.getTopProducts = catchAsync(async(req, res) => {
             as: "images"
         },
     });
-    products = await isLiked(products, req)
+    productss = await isLiked(productss, req)
+    const products={
+        count,
+        rows:productss
+    }
+    const count=await Products.count({where:{sellerId:null}})
 
-    return res.status(200).json(products);
+    return res.status(200).send(products);
 });
 exports.getLikedProducts = catchAsync(async(req, res) => {
     const limit = req.query.limit || 10;
     const offset = req.query.offset || 0;
     const { sort, isAction, discount } = req.query;
     var order, where = [];
-    if (sort == 1) {
-        order = [
-            ['price', 'DESC']
-        ];
-    } else if (sort == 0) {
-        order = [
-            ['price', 'ASC']
-        ];
-    } else if (sort == 3) {
-        order = [
-            ["sold_count", "DESC"]
-        ]
-    } else order = [
-        ['updatedAt', 'DESC']
-    ];
     where = getWhere(req.query)
     if (discount && discount != "false") {
         let discount = {
@@ -184,7 +217,7 @@ exports.getLikedProducts = catchAsync(async(req, res) => {
 
     if (isAction) where.push({ isAction })
     order.push(["likeCount", "DESC"])
-    let products = await Products.findAll({
+    let productss = await Products.findAll({
         isActive: true,
         order,
         limit,
@@ -195,7 +228,11 @@ exports.getLikedProducts = catchAsync(async(req, res) => {
             as: "images"
         },
     });
-    products = await isLiked(products, req)
+    productss = await isLiked(productss, req)
+    const products={
+        count,
+        rows:productss
+    }
     return res.status(200).send({ products })
 });
 // Search
@@ -219,41 +256,69 @@ exports.searchProducts = catchAsync(async(req, res, next) => {
     ];
 
     let keywordsArray = [];
+    let keyword2=keyword
     keyword = keyword.toLowerCase();
     keywordsArray.push('%' + keyword + '%');
     keyword = '%' + capitalize(keyword) + '%';
     keywordsArray.push(keyword);
-    const products = await Products.findAll({
-        where: {
-            [Op.or]: [{
-                    name_tm: {
-                        [Op.like]: {
-                            [Op.any]: keywordsArray,
-                        },
+    let where = {
+        [Op.or]: [{
+                name_tm: {
+                    [Op.like]: {
+                        [Op.any]: keywordsArray,
                     },
                 },
-                {
-                    name_ru: {
-                        [Op.like]: {
-                            [Op.any]: keywordsArray,
-                        },
+            },
+            {
+                name_ru: {
+                    [Op.like]: {
+                        [Op.any]: keywordsArray,
                     },
+                },
 
-                },
-            ],
-            isActive: true,
-        },
+            },
+        ],
+    }
+    const productss = await Products.findAll({
+        where,
         order,
         limit,
         offset,
+        include:[
+            {
+                model:Images,
+                as:"images"
+            }
+        ]
     });
+    const count=await Products.count({where})
+    delete where.isActive
+    const subcategories = await Subcategories.findAndCountAll({
+        where,
+        order:[["createdAt","DESC"]],
+        limit,
+        offset
+    })
+    const seller = await Seller.findAll({
+        where,
+        order:[["createdAt","DESC"]],
+        limit,
+        offset
+    })
+    const products={
+        data:await isLiked(productss),
+        count:count
+    }
+    const searchhistory=await Searchhistory.findOne({where:{name:keyword2}})
+    if(!searchhistory) await Searchhistory.create({name:keyword2,count:1})
+    else await searchhistory.update({count:searchhistory.count+1})
 
-    return res.status(200).send({ products });
+    return res.status(200).send({ products, subcategories, seller });
 });
 exports.discount = catchAsync(async(req, res, next) => {
     const limit = req.query.limit || 20;
     const offset = req.query.offset || 0;
-    const { sort, isAction, max_price, min_price, sex } = req.query
+    const { sort, isAction } = req.query
     let order, where = {}
     if (sort == 1) {
         order = [
@@ -275,8 +340,6 @@ exports.discount = catchAsync(async(req, res, next) => {
         [Op.ne]: 0
     }
     where.push({ discount })
-
-
     if (isAction) where.push({ isAction })
     let discount_products = await Products.findAll({
         where,
@@ -290,8 +353,12 @@ exports.discount = catchAsync(async(req, res, next) => {
 
     });
     discount_products = await isLiked(discount_products, req)
+    const products={
+        count,
+        rows:await discount_products
+    }
     const count = await Products.count({ where })
-    return res.status(200).send({ discount_products, count })
+    return res.status(200).send({ discount_products:products })
 })
 exports.actionProducts = catchAsync(async(req, res, next) => {
     const limit = req.query.limit || 20;
@@ -335,7 +402,11 @@ exports.actionProducts = catchAsync(async(req, res, next) => {
     });
     const count = await Products.count({ where })
     action_products = await isLiked(action_products, req)
-    return res.status(200).send({ action_products, count })
+    const products = {
+        count,
+        rows:action_products
+    }
+    return res.status(200).send({ action_products:products})
 })
 exports.newProducts = catchAsync(async(req, res) => {
     const limit = req.query.limit || 20;
@@ -479,9 +550,10 @@ exports.getSubcategoryProducts = catchAsync(async(req, res, next) => {
         return next(new AppError('Sub-category did not found with that ID', 404));
     const limit = req.query.limit || 20;
     const offset = req.query.offset;
-    const { is_new, max_price, min_price, sex, discount, sort } = req.query
-    var order, where = {};
-    if (sort == 1) {
+    const { is_new, discount, sort } = req.query
+    var order, where = [];
+    where=getWhere(req.query)
+       if (sort == 1) {
         order = [
             ['price', 'DESC']
         ];
@@ -497,44 +569,7 @@ exports.getSubcategoryProducts = catchAsync(async(req, res, next) => {
         ['updatedAt', 'DESC']
     ];
     if (is_new == "true") {
-        where.isNew = true
-    }
-    if (max_price && min_price == undefined) {
-        where.price = {
-            [Op.lte]: max_price
-        }
-    } else if (max_price == undefined && min_price) {
-        where.price = {
-            [Op.gte]: min_price
-        }
-    } else if (max_price && min_price) {
-        where = {
-            [Op.and]: [{
-                    price: {
-                        [Op.gte]: min_price
-                    }
-                },
-                {
-                    price: {
-                        [Op.lte]: max_price
-                    }
-                }
-            ]
-        }
-    }
-    if (sex) {
-        sex.split = (",")
-        var array = []
-        for (let i = 0; i < sex.length; i++) {
-            array.push({
-                sex: {
-                    [Op.eq]: sex[i]
-                }
-            })
-        }
-        where = {
-            [Op.or]: array
-        }
+        where.push({isNew : true})
     }
     if (discount && discount != "false") where.discount = {
         [Op.ne]: 0

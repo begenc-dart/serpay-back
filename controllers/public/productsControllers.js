@@ -94,14 +94,10 @@ exports.getTopProducts = catchAsync(async(req, res) => {
     ];
     where = getWhere(req.query)
     if (discount && discount != "false") {
-        let discount = {
-            [Op.ne]: 0
-        }
+        let discount = {[Op.ne]: 0}
         where.push({ discount })
     }
-    if (isAction) {
-        where.push({ isAction })
-    }
+    if (isAction) where.push({ isAction })
     order.push(["sold_count", "DESC"])
     if (isAction) where.isAction = isAction;
     const productss = await Products.findAll({
