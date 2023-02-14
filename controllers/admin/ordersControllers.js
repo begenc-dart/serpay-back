@@ -7,18 +7,20 @@ const {
     Orders,
     Orderproducts,
     Stock,
+    Seller
 } = require('../../models');
 
 exports.getAllOrders = catchAsync(async(req, res, next) => {
     const limit = req.query.limit || 20;
     let { user_phone, status,keyword } = req.query;
+    console.log(req.query)
     let offset = req.query.offset || 0
     var where = {};
     if (user_phone) {
         user_phone = '+' + user_phone;
         where.user_phone = user_phone;
     }
-    if (status) {
+    if (status!="" && status !=null) {
         where.status = status
     }
     if (keyword != "undefined") {
@@ -52,6 +54,10 @@ exports.getAllOrders = catchAsync(async(req, res, next) => {
         ],
         limit,
         offset,
+        include:{
+            model:Seller,
+            as:"seller"
+        }
     });
     const count = await Orders.count({ where })
     return res.status(201).send({ orders, count });

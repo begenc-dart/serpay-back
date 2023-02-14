@@ -76,7 +76,6 @@ exports.protect = catchAsync(async(req, res, next) => {
     const decoded = await promisify(jwt.verify)(token, 'rustam');
 
     const freshUser = await Users.findOne({ where: { user_id: [decoded.id] } });
-
     if (!freshUser) {
         return next(
             new AppError('The user belonging to this token is no longer exists', 401)

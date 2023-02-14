@@ -92,7 +92,8 @@ module.exports = {
                 type: DataTypes.STRING,
             },
             sellerId: {
-                type: DataTypes.INTEGER
+                type: DataTypes.INTEGER,
+                defaultValue:0
             },
             createdAt: {
                 allowNull: false,

@@ -2,7 +2,8 @@ const { Op } = require('sequelize');
 const {
     Products,
     Images,
-    Seller
+    Seller,
+    Orders
 } = require('../../models');
 const catchAsync = require('../../utils/catchAsync');
 const AppError = require('../../utils/appError');
@@ -95,6 +96,9 @@ exports.sellerProductNew = catchAsync(async(req, res, next) => {
     })
     // product = await isLiked(product)
     return res.send({ seller, product })
+})
+exports.setId=catchAsync(async(req, res, next) => {
+    await Orders.update({sellerId:0},{where:{userId:{[Op.not]:null}}})
 })
 const capitalize = function(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);

@@ -15,7 +15,7 @@ exports.addMyOrders = catchAsync(async(req, res, next) => {
     let total_price = 0;
     let total_quantity = 0;
     let where= {[Op.and]: [{ userId: req.user.id }, { is_ordered: false },{isSelected:true}]}
-    if(seller_id) where.seller_id=sellerId
+    if(seller_id!=null && seller_id!="null") where.seller_id=seller_id
     const order_products = await Orderproducts.findAll({where})
     let orders_array = []
     if (order_products.length == 0) return next(new AppError("Select products to order", 400))
@@ -46,9 +46,9 @@ exports.addMyOrders = catchAsync(async(req, res, next) => {
         total_quantity = total_quantity + order_products[j].quantity;
         total_price = total_price + order_products[j].total_price;
     }
-        let sellerId = null
+        let sellerId = 0
         if (order_products[0].seller_id) {
-            var seller = await Seller.findOne({ seller_id: new_array[i].seller_id })
+            var seller = await Seller.findOne({ seller_id: order_products[0].seller_id })
             sellerId = seller.id
         }
         const order = await Orders.create({
@@ -264,7 +264,7 @@ exports.getNotOrderedProducts = catchAsync(async(req, res, next) => {
     where.userId=req.user.id
     where.is_ordered=false
     if(req.query.isSelected) where.isSelected=req.query.isSelected 
-    const order_products = await Orderproducts.findAll({ where, limit, offset })
+    const order_products = await Orderproducts.findAll({ where, limit, offset,order:[["createdAt","DESC"]] })
     const checked_products = []
 
     for (var i = 0; i < order_products.length; i++) {

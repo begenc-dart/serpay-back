@@ -82,7 +82,7 @@ exports.getAllHistory = catchAsync(async(req, res, next) => {
         limit,
         offset,
         order: [
-            ["createdAt", "DESC"]
+            ["updatedAt", "DESC"]
         ],
         include: {
             model: Products,
@@ -177,7 +177,6 @@ exports.getMyResult = catchAsync(async(req, res, next) => {
     return res.status(200).send({ position: index })
 })
 exports.likeProduct = catchAsync(async(req, res, next) => {
-    console.log(req.body)
     const product = await Products.findOne({ where: { product_id: req.body.product_id } })
     if (!product) return next(new AppError("Product with that id not found"))
     const liked_product = await Likedproducts.create({ userId: req.user.id, productId: product.id })
@@ -185,7 +184,6 @@ exports.likeProduct = catchAsync(async(req, res, next) => {
     return res.status(200).send({ liked_product, product })
 })
 exports.dislikeProduct = catchAsync(async(req, res, next) => {
-    console.log(req.body)
     const product = await Products.findOne({ where: { product_id: req.params.id } })
     if (!product) return next(new AppError("Product with that id not found", 404))
     const liked_product = await Likedproducts.findOne({ where: { productId: product.id, userId: req.user.id } })
@@ -195,7 +193,6 @@ exports.dislikeProduct = catchAsync(async(req, res, next) => {
     return res.status(200).send({ msg: "Success" })
 })
 exports.getUsersLikedProducts = catchAsync(async(req, res, next) => {
-    console.log(req.body)
     const limit = req.query.limit || 20
     const offset = req.query.offset || 0
     const { sort } = req.query

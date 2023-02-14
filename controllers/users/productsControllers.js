@@ -353,11 +353,11 @@ exports.discount = catchAsync(async(req, res, next) => {
 
     });
     discount_products = await isLiked(discount_products, req)
+    const count = await Products.count({ where })
     const products={
         count,
         rows:await discount_products
     }
-    const count = await Products.count({ where })
     return res.status(200).send({ discount_products:products })
 })
 exports.actionProducts = catchAsync(async(req, res, next) => {
