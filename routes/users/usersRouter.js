@@ -35,7 +35,7 @@ router.use("/address", protect, require("./routes/addressRouter"))
 router.use("/chat", protect, require("./routes/chatsRouter"))
 router.use("/seller", protect, require("./routes/sellerRouter"))
 router.use("/my-orders", protect, require("./routes/ordersRouter"))
-    // router.use("/competition", protect, require("./routes/"))
+    // router.use("/competition", protect, require("./routes/competitionRouter"))
 router.patch('/forgot-password', verify_code_forgotten, forgotPassword);
 router.post('/signup', verify_code, signup);
 router.get("/get-me", protect, getMe)
