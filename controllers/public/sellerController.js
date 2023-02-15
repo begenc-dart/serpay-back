@@ -30,6 +30,8 @@ exports.getAll = catchAsync(async(req, res, next) => {
 })
 exports.sellerProduct = catchAsync(async(req, res, next) => {
     let seller_id = req.params.id
+    const limit=req.query.limit || 20
+    const offset=req.query.offset || 0
     const seller = await Seller.findOne({ where: { seller_id } })
     if (!seller) {
         return next(new AppError(`Seller with id ${seller_id} not found`))
@@ -68,6 +70,8 @@ exports.sellerProduct = catchAsync(async(req, res, next) => {
     order.push(["images", "id", "DESC"])
     const productss = await Products.findAll({
         where,
+        limit,
+        offset,
         include: [{
             model: Images,
             as: "images"

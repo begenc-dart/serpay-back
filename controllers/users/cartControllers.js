@@ -75,6 +75,7 @@ exports.addMyCart = catchAsync(async(req, res, next) => {
 
     orderProductData.userId = req.user.id
     orderProductData.is_ordered = false
+    orderProductData.isSelected=true
     orderProductData.product_id = product_id
         // orderProductData.createdAt = new Date(2018, 11, 24, 10, 33, 30, 0)
     const order_product = await Orderproducts.create(orderProductData)

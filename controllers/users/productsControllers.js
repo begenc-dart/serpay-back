@@ -622,7 +622,7 @@ exports.getSubcategoryProducts = catchAsync(async(req, res, next) => {
             as: "images"
         }]
     });
-    products=await isLiked(products)
+    products=await isLiked(products,req)
     const count = await Products.count({ where: { subcategoryId: subcategory.id } })
     return res.status(200).send({ products, count, subcategory });
 });

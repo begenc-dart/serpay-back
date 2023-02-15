@@ -31,12 +31,12 @@ exports.addMyOrders = catchAsync(async(req, res, next) => {
             }
         });
         if (product_size) {
-            if (product_size.product_size_stock.quantity < order_products[j].quantity) {
+            if (product_size.product_size_stock.quantity < order_products[j].quantity && product.sellerId==null) {
                 order_products[j].quantity = product_size.product_size_stock.quantity
             }
             checkedProducts.push(product_size);
             order_products[j].total_price = product_size.price * order_products[j].quantity
-        } else if (product) {
+        } else if (product && product.sellerId==null) {
             if (product.product_stock[0].quantity < order_products[j].quantity) {
                 order_products[j].quantity = product.product_stock[0].quantity
             }
@@ -287,7 +287,11 @@ exports.getNotOrderedProducts = catchAsync(async(req, res, next) => {
                 as:"product_colors",
                 include:[{
                     model:Productsizes,
-                    as:"product_sizes"
+                    as:"product_sizes",
+                    include:{   
+                        model:Stock,
+                        as:"product_size_stock"
+                    },
                 },
                 {
                     model:Images,

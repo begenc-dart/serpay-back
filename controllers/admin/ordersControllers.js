@@ -135,13 +135,18 @@ exports.changeOrderStatus = catchAsync(async(req, res, next) => {
         return next(new AppError('Order did not found with that ID', 404));
     }
 
-    if (req.body.status == "delivered") {
+    if (req.body.status == "Eltip berildi") {
         for (var i = 0; i < order.order_products.length; i++) {
             const product = await Products.findOne({
                 where: { product_id: order.order_products[i].product_id },
             });
-            // const product_size = await Productsizes
-            const stock = await Stock.findOne({ where: { productId: product.id } });
+            let where={
+                productId:product.id
+            }
+            if(order.order_products[i].product_size_id!=null) 
+            var product_size = await Productsizes.findOne({where:{product_size_id:order.order_products[i].product_size_id}})
+            if(product_size) where={productId:product.id,productsizeId:product_size.id}
+            const stock = await Stock.findOne( where);
             await stock.update({
                 stock_quantity: stock.stock_quantity - order.order_products[i].quantity,
             });
