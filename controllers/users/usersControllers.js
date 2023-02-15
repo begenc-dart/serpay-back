@@ -70,7 +70,7 @@ exports.addMyHistory = catchAsync(async(req, res, next) => {
     const product = await Products.findOne({ where: { product_id: req.body.product_id } })
     req.body.productId = product.id
     let address=await Userhistory.findOne({where: { userId:req.user.id,productId:product.id}})
-    if(address) await address.update()
+    if(address) await address.update({updatedAt:new Date()})
     else address = await Userhistory.create(req.body)
     return res.status(201).send(address)
 })
@@ -125,56 +125,6 @@ exports.deleteAllHistory = catchAsync(async(req, res, next) => {
         await Userhistory.destroy({ where: { history_id: user_histories[i].history_id } })
     }
     return res.status(200).send({ msg: "Sucess" })
-})
-exports.enterToCompetition = catchAsync(async(req, res, next) => {
-    const { freeproduct_id } = req.body
-    const freeproduct = await Freeproducts.findOne({ where: { freeproduct_id } })
-    if (!freeproduct) return next(new AppError("Product with that not found", 404))
-    req.body.freeproductId = freeproduct.id
-    req.body.userId = req.user.id
-    const has = await Sharingusers.findOne({ where: { freeproductId: freeproduct.id, userId: req.user.id } })
-    if (has) return next(new AppError("You are already competing", 403))
-    const sharing_user = await Sharingusers.create(req.body)
-    return res.status(201).send(sharing_user)
-})
-exports.generateLink = catchAsync(async(req, res, next) => {
-    const freeproduct = await Freeproducts.findOne({ where: { freeproduct_id: req.body.freeproduct_id } })
-    if (!freeproduct) return next(new AppError("Free product with that id not found", 404))
-    const sharing_user = await Sharingusers.findOne({ where: { freeproductId: freeproduct.id, userId: req.user.id } })
-    const link = "http://10.192.168.23:3000/hyzmatlar/share/" + freeproduct.freeproduct_id + "?sharinguser_id=" + sharing_user.sharinguser_id
-    return res.status(200).send(link)
-})
-exports.addOne = catchAsync(async(req, res, next) => {
-    const sharing_user = await Sharingusers.findOne({ where: { sharinguser_id: req.body.sharinguser_id } })
-    if (!sharing_user) return next(new AppError("Sharing user with that id not found"), 404)
-    const freeproduct = await Freeproducts.findOne({ where: { freeproduct_id: req.body.freeproduct_id } })
-    if (!freeproduct) return next(new AppError("Free product with that id not found"), 404)
-    const entered_user = await Enteredusers.findOne({
-        where: {
-            [Op.and]: [{ sharinguserId: sharing_user.id }, { freeproductId: freeproduct.id }, { entereduserId: req.user.id }]
-        }
-    })
-    if (!entered_user) {
-        var new_entered_user = await Enteredusers.create({ sharinguserId: sharing_user.id, isEntered: true, freeproductId: freeproduct.id, entereduserId: req.user.id })
-        await sharing_user.update({
-            count: sharing_user.count + 1
-        })
-    }
-    return res.status(200).send({ sharing_user, new_entered_user })
-})
-exports.deleteCompetitor = catchAsync(async(req, res, next) => {
-    const sharing_user = await Sharingusers.findOne({ where: { userId: req.user.id, freeproductId: req.params.id } })
-    sharing_user.destroy()
-    return res.status(200).send({ msg: "Successfully deleted" })
-})
-exports.getMyResult = catchAsync(async(req, res, next) => {
-    const freeproduct = await Freeproducts.findOne({ where: { freeproduct_id: req.params.id } })
-    const sharing_users = await Sharingusers.findAll({ where: { freeproductId: freeproduct.id } })
-    for (let i = 0; i < sharing_users.length; i++) {
-        var index = i + 1
-        if (sharing_users[i].userId == req.user.id) break
-    }
-    return res.status(200).send({ position: index })
 })
 exports.likeProduct = catchAsync(async(req, res, next) => {
     const product = await Products.findOne({ where: { product_id: req.body.product_id } })

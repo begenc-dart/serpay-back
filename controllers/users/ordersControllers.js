@@ -272,7 +272,11 @@ exports.getNotOrderedProducts = catchAsync(async(req, res, next) => {
             where: { product_id: order_products[i].product_id },
             include:[{
                 model:Productsizes,
-                as:"product_sizes"
+                as:"product_sizes",
+                include:{
+                    model:Stock,
+                    as:"product_size_stock",
+                }
             },
             {
                 model:Seller,

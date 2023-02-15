@@ -18,16 +18,12 @@ const {
     addMyHistory,
     deleteMyHistory,
     enterToCompetition,
-    addOne,
-    deleteCompetitor,
     likeProduct,
     dislikeProduct,
     getUsersLikedProducts,
     uploadUserImage,
     createCard,
     deleteAllHistory,
-    generateLink,
-    getMyResult
 } = require('../../controllers/users/usersControllers');
 const router = express.Router();
 router.use("/products", protect, require("./routes/productsRouter"))
@@ -35,7 +31,7 @@ router.use("/address", protect, require("./routes/addressRouter"))
 router.use("/chat", protect, require("./routes/chatsRouter"))
 router.use("/seller", protect, require("./routes/sellerRouter"))
 router.use("/my-orders", protect, require("./routes/ordersRouter"))
-    // router.use("/competition", protect, require("./routes/competitionRouter"))
+router.use("/competition", protect, require("./routes/competitionRouter"))
 router.patch('/forgot-password', verify_code_forgotten, forgotPassword);
 router.post('/signup', verify_code, signup);
 router.get("/get-me", protect, getMe)
@@ -58,11 +54,6 @@ router.patch("/my-cart/:id", protect, updateProduct)
 router.get("/not-ordered", protect, getNotOrderedProducts)
 router.post("/delete/not-ordered/:id", protect, deleteProduct)
 router.post("/delete/not-ordered/multiple/", protect, deleteSelected)
-router.post("/competition/add", protect, enterToCompetition)
-router.post("/competition/add-one", protect, addOne)
-router.post("/competition/link", protect, generateLink)
-router.post("/delete/competition/:id", protect, deleteCompetitor)
-router.get("/competition/me/:id", protect, getMyResult)
 router.get("/like", protect, getUsersLikedProducts)
 router.post("/like", protect, likeProduct)
 router.post("/delete/like/:id", protect, dislikeProduct)
