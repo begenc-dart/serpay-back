@@ -39,6 +39,18 @@ module.exports = {
             max: {
                 type: DataTypes.INTEGER
             },
+            contestants:{
+                type:DataTypes.INTEGER,
+                defaultValue:0
+            },
+            isActive:{
+                type:DataTypes.BOOLEAN,
+                defaultValue:true
+            },
+            percent:{
+                type:DataTypes.INTEGER,
+                defaultValue:0
+            },
             createdAt: {
                 allowNull: false,
                 type: DataTypes.DATE

@@ -129,7 +129,6 @@ exports.getAccount=catchAsync(async(req,res,next)=>{
     const { startTime, endTime, seller_id } = req.query
     // { startTime: '2022-08-09', endTime: '2022-08-27', phoneNumber: '' }
 if (startTime) {
-    console.log(301, "i am here")
     let firstDate = new Date(startTime)
     let secondDate = new Date(endTime)
     let where={}

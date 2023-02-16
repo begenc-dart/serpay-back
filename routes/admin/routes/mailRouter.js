@@ -4,6 +4,6 @@ const { getAllMail,deleteMail, getMail } = require('../../../controllers/admin/m
 const router = express.Router();
 router.get('/', getAllMail);
 router.get("/:id",getMail)
-router.delete('/:id', deleteMail);
+router.post('/delete/:id', deleteMail);
 
 module.exports = router;

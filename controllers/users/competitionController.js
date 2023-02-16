@@ -30,7 +30,8 @@ exports.addOne = catchAsync(async(req, res, next) => {
     await sharing_user.update({
         count: sharing_user.count + 1
     })
-    return res.status(200).send({ sharing_user })
+    const link = "http://10.192.168.23:3000/hyzmatlar/share/" + freeproduct.freeproduct_id
+    return res.status(200).send({ sharing_user,link })
 })
 exports.deleteCompetitor = catchAsync(async(req, res, next) => {
     const sharing_user = await Sharingusers.findOne({ where: { userId: req.user.id, freeproductId: req.params.id } })

@@ -9,18 +9,31 @@ const {
 } = require('../../models');
 exports.getAllFreeProducts = catchAsync(async(req, res, next) => {
     const free_products = await Freeproducts.findAll({
+        where:{isActive:true},
         order: [
             [
                 "createdAt", "DESC"
             ]
         ],
-        limit:1,
+        // limit:1,
         include: {
             model: Images,
             as: "images"
         }
     })    
-    return res.status(200).send(free_products)
+    let index=0
+    for(const free_product of free_products) {
+        const max = await Sharingusers.max("count", { where: { freeproductId: free_product.id } })
+        const count=await Sharingusers.count({where:{freeproductId:free_product.id}})
+        if(max) free_products[index].max=max
+        if(count) free_products[index].count=count
+        index+=1
+    }
+    const obj={
+        expire_time:free_products[0].expire_date,
+        data:free_products
+    }
+    return res.status(200).send(obj)
 })
 exports.getOne = catchAsync(async(req, res, next) => {
     const free_product = await Freeproducts.findOne({ where: { freeproduct_id: req.params.id } })

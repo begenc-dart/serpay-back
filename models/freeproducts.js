@@ -24,7 +24,19 @@ module.exports = (sequelize, DataTypes) => {
         max: {
             type: DataTypes.INTEGER,
             defaultValue: 0
-        }
+        },
+        contestants:{
+            type:DataTypes.INTEGER,
+            defaultValue:0
+        },
+        isActive:{
+            type:DataTypes.BOOLEAN,
+            defaultValue:true
+        },
+        // percent:{
+        //     type:DataTypes.INTEGER,
+        //     defaultValue:0
+        // }
     }, {
         sequelize,
         tableName: "freeproducts",
