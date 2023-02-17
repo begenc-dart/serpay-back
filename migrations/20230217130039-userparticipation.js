@@ -5,9 +5,10 @@ module.exports = {
   async up (queryInterface, Sequelize) {
     await queryInterface.addColumn(
       "users",
-      "isParticipatig",
+      "isParticipating",
       {type:Sequelize.BOOLEAN,defaultValue:false}
     )
+  
   },
 
   async down (queryInterface, Sequelize) {

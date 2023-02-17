@@ -24,6 +24,7 @@ module.exports = (sequelize, DataTypes) => {
         user_phone: DataTypes.STRING,
         password: DataTypes.STRING,
         image: DataTypes.STRING,
+        isParticipating:DataTypes.BOOLEAN,
         lastSocketId: DataTypes.STRING
     }, {
         sequelize,

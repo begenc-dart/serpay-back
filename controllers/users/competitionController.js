@@ -1,17 +1,21 @@
 const AppError = require('../../utils/appError');
 const catchAsync = require('../../utils/catchAsync');
-const {  Sharingusers, Freeproducts,  Enteredusers,User } = require('../../models');
+const {  Sharingusers, Freeproducts,  Enteredusers,Users } = require('../../models');
 const { Op } = require("sequelize")
 
 exports.enterToCompetition = catchAsync(async(req, res, next) => {
     if (req.user.isParticipating) return next(new AppError("You are already competing", 403))
     const { freeproduct_id } = req.body
+    console.log(req.body)
     const freeproduct = await Freeproducts.findOne({ where: { freeproduct_id } })
     if (!freeproduct) return next(new AppError("Product with that not found", 404))
     req.body.freeproductId = freeproduct.id
     req.body.userId = req.user.id
     const sharing_user = await Sharingusers.create(req.body)
-    return res.status(201).send(sharing_user)
+    await Users.update({isParticipating:true},{where:{id:req.user.id}})
+    const link = "http://10.192.168.23:3000/hyzmatlar/share/" + freeproduct.freeproduct_id
+
+    return res.status(201).send({sharing_user,link})
 })
 exports.generateLink = catchAsync(async(req, res, next) => {
     const freeproduct = await Freeproducts.findOne({ where: { freeproduct_id: req.body.freeproduct_id } })
@@ -21,7 +25,7 @@ exports.generateLink = catchAsync(async(req, res, next) => {
 })
 exports.addOne = catchAsync(async(req, res, next) => {
     if(req.user.isParticipating) return next(new AppError("You already competing or gave your voice",402))
-    const user=await User.findOne({where:{[Op.or]:[{username:req.body.username},{phone_number:req.body.username}]}})
+    const user=await Users.findOne({where:{[Op.or]:[{username:req.body.username},{user_phone:req.body.username}]}})
     if(!user) return next(new AppError("User with your parameters does not exist",404))
     const freeproduct = await Freeproducts.findOne({ where: { freeproduct_id: req.body.freeproduct_id } })
     if (!freeproduct) return next(new AppError("Free product with that id not found"), 404)
@@ -30,6 +34,8 @@ exports.addOne = catchAsync(async(req, res, next) => {
     await sharing_user.update({
         count: sharing_user.count + 1
     })
+    await Users.update({isParticipating:true},{where:{id:req.user.id}})
+
     const link = "http://10.192.168.23:3000/hyzmatlar/share/" + freeproduct.freeproduct_id
     return res.status(200).send({ sharing_user,link })
 })

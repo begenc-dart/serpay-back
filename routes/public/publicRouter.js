@@ -9,6 +9,6 @@ router.use('/sub-categories', require('./routes/subcategoriesRouter'));
 router.use("/brands", require("./routes/brandsRouter"))
 router.use('/products', require('./routes/productsRouter'));
 router.use("/orders", require("./routes/ordersRouter"))
-router.use("/free-products/", require("./routes/freeProductsRouter"))
+router.use("/free-products", require("./routes/freeProductsRouter"))
 router.use("/seller", require("./routes/sellerRouter"))
 module.exports = router;
