@@ -253,7 +253,6 @@ exports.addSizeToColor = catchAsync(async(req, res, next) => {
     const product_color = await Productcolor.findOne({ where: { product_color_id: req.params.id } })
     await Productsizes.destroy({ where: { productColorId: product_color.id } })
     var sizes = []
-    console.log(req.body)
     const product = await Products.findOne({ where: { product_id: req.body.product_id } })
     if (!product) return next(new AppError("Product with that id not found", 404))
     for (let i = 0; i < req.body.sizes.length; i++) {
@@ -370,7 +369,6 @@ exports.editProductStatus = catchAsync(async(req, res, next) => {
     const product = await Products.findOne({
         where: { product_id: req.params.id },
     });
-    console.log(req.body)
     if (!product)
         return next(new AppError('Product did not found with that ID', 404));
 
@@ -411,7 +409,6 @@ exports.deleteProduct = catchAsync(async(req, res, next) => {
         return next(new AppError('Product did not found with that ID', 404));
 
     const images = await Images.findAll({ where: { productId: product.id } })
-    console.log(images)
     for (const image of images) {
         fs.unlink(`static/${image.image}`, function(err) {
             if (err) console.log(err)

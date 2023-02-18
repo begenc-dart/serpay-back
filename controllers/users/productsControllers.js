@@ -638,7 +638,7 @@ async function isLiked(products, req) {
     return products
 }
 
-function getWhere({ max_price, min_price, sex }) {
+function getWhere({ max_price, min_price, sex,is_new }) {
     let where = []
     if (max_price && min_price == "") {
         let price = {
@@ -678,7 +678,7 @@ function getWhere({ max_price, min_price, sex }) {
             })
         }
         where.push(array)
-
     }
+    if(is_new && is_new=="true") where.push({isNew:true})
     return where
 }

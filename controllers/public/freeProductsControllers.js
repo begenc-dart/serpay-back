@@ -54,7 +54,6 @@ exports.getOne = catchAsync(async(req, res, next) => {
         order: [
             ["count", "DESC"]
         ],
-
         limit: 5
     })
     let ready_top5 = []
@@ -63,7 +62,6 @@ exports.getOne = catchAsync(async(req, res, next) => {
             where: { id: top.userId },
             attributes: ["image", "nickname"]
         })
-        
         let obj = {
             count: top.count,
             nickname: user.nickname,

@@ -128,6 +128,7 @@ exports.deleteSeller = catchAsync(async(req, res, next) => {
 exports.getAccount=catchAsync(async(req,res,next)=>{
     const { startTime, endTime, seller_id } = req.query
     // { startTime: '2022-08-09', endTime: '2022-08-27', phoneNumber: '' }
+    let where={}
 if (startTime) {
     let firstDate = new Date(startTime)
     let secondDate = new Date(endTime)

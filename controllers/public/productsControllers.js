@@ -606,4 +606,5 @@ function getOrder({sort}){
     } else order = [
         ['updatedAt', 'DESC']
     ];
+    return order
 }

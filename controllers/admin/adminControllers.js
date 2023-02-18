@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const { promisify } = require('util');
 const AppError = require('../../utils/appError');
 const catchAsync = require('../../utils/catchAsync');
-const { Admin, Products } = require('../../models');
+const { Admin, Products,Users,Orders } = require('../../models');
 const fs = require("fs")
 const { Op } = require("sequelize")
 const signToken = (id) => {
@@ -134,4 +134,11 @@ exports.changeTime = catchAsync(async(req, res, next) => {
 exports.getTime = catchAsync(async(req, res, next) => {
     var expiration_days = fs.readFileSync('config/expire_time.txt', 'utf8')
     return res.status(200).send({ day: Number(expiration_days) })
+})
+exports.getStats=catchAsync(async(req, res, next) => {
+    const user_count=await Users.count()
+    const discount_count=await Products.count({where:{discount:{[Op.not]:null}}})
+    const product_count=await Products.count()
+    const order_count=await Orders.count()
+    return res.send({user_count,discount_count,product_count,order_count})
 })

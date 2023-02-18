@@ -4,17 +4,47 @@ const {
     Subcategories,
     Images
 } = require('../../models');
+const {Op}=require("sequelize")
 const AppError = require('../../utils/appError');
 const catchAsync = require('../../utils/catchAsync');
 
 exports.getAllCategories = catchAsync(async(req, res) => {
     const limit = req.query.limit || 20;
     const offset = req.query.offset;
+    let {keyword}=req.query
+    let where={}
+    if(keyword && keyword!="undefined"){
+        let keywordsArray = [];
+        keyword = keyword.toLowerCase();
+        keywordsArray.push('%' + keyword + '%');
+        keyword = '%' + capitalize(keyword) + '%';
+        keywordsArray.push(keyword);
+        where = {
+            [Op.or]: [{
+                    name_tm: {
+                        [Op.like]: {
+                            [Op.any]: keywordsArray,
+                        },
+                    },
+                },
+                {
+                    name_ru: {
+                        [Op.like]: {
+                            [Op.any]: keywordsArray,
+                        },
+                    },
+    
+                },
+            ],
+        }
+    }
     const categories = await Categories.findAll({
         limit,
         offset,
+        where,
         order: [
-            ['id', 'ASC'],
+            ['sequence', 'ASC'],
+            ["createdAt", 'DESC'], 
             ["subcategories", "createdAt", "DESC"],
         ],
         include: {
@@ -63,3 +93,6 @@ exports.getCategoryProducts = catchAsync(async(req, res, next) => {
     const count = await Products.count({ where: { categoryId: category.id } })
     return res.status(200).send({ products, count });
 });
+const capitalize = function(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+};

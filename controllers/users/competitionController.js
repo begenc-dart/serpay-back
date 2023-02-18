@@ -46,10 +46,15 @@ exports.deleteCompetitor = catchAsync(async(req, res, next) => {
 })
 exports.getMyResult = catchAsync(async(req, res, next) => {
     const freeproduct = await Freeproducts.findOne({ where: { freeproduct_id: req.params.id } })
-    const sharing_users = await Sharingusers.findAll({ where: { freeproductId: freeproduct.id } })
-    for (let i = 0; i < sharing_users.length; i++) {
-        var index = i + 1
-        if (sharing_users[i].userId == req.user.id) break
-    }
-    return res.status(200).send({ position: index })
+    const sharing_users = await Sharingusers.findAll({ where: { freeproductId: freeproduct.id },order:[["count","DESC"]] })
+    const sharing_user=await Sharingusers.findOne({ where: { freeproductId:freeproduct.id,userId:req.user.id}})
+    if(sharing_user){
+        for (let i = 0; i < sharing_users.length; i++) {
+            var index = i+1
+            if (sharing_users[i].userId == req.user.id)
+            break
+        }
+        req.user.password=undefined
+        return res.status(200).send({ position: index,sharing_user:req.user,count:sharing_users[index-1].count })
+    }else return res.status(404).send("You are not competing")
 })

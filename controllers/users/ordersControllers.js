@@ -14,7 +14,7 @@ exports.addMyOrders = catchAsync(async(req, res, next) => {
     let checkedProducts = [];
     let total_price = 0;
     let total_quantity = 0;
-    let where= {[Op.and]: [{ userId: req.user.id }, { is_ordered: false },{isSelected:true}]}
+    let where= { userId: req.user.id , is_ordered: false ,isSelected:true}
     if(seller_id!=null && seller_id!="null") where.seller_id=seller_id
     const order_products = await Orderproducts.findAll({where})
     let orders_array = []
@@ -34,14 +34,14 @@ exports.addMyOrders = catchAsync(async(req, res, next) => {
             if (product_size.product_size_stock.quantity < order_products[j].quantity && product.sellerId==null) {
                 order_products[j].quantity = product_size.product_size_stock.quantity
             }
-            checkedProducts.push(product_size);
+            order_products[j].price=product_size.price;
             order_products[j].total_price = product_size.price * order_products[j].quantity
         } else if (product && product.sellerId==null) {
             if (product.product_stock[0].quantity < order_products[j].quantity) {
                 order_products[j].quantity = product.product_stock[0].quantity
             }
             order_products[j].total_price = product.price * order_products[j].quantity
-            checkedProducts.push(product);
+            order_products[j].price=product.price
         }
         total_quantity = total_quantity + order_products[j].quantity;
         total_price = total_price + order_products[j].total_price;
@@ -70,7 +70,7 @@ exports.addMyOrders = catchAsync(async(req, res, next) => {
             await Orderproducts.update({
                 orderId: order.id,
                 quantity: order_products[x].quantity,
-                price: checkedProducts[x].price,
+                price: order_products[x].price,
                 total_price: order_products[x].total_price,
                 is_ordered: true,
                 is_selected: false,

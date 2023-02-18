@@ -17,7 +17,6 @@ const {
     getAllHistory,
     addMyHistory,
     deleteMyHistory,
-    enterToCompetition,
     likeProduct,
     dislikeProduct,
     getUsersLikedProducts,

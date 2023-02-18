@@ -44,7 +44,7 @@ exports.editCategory = catchAsync(async(req, res, next) => {
     if (!category)
         return next(new AppError('Category did not found with that ID', 404));
 
-    const { name_tm, name_ru, name_en } = req.body;
+    const { name_tm, name_ru, sequence } = req.body;
     if (
         typeof name_tm !== 'string' ||
         name_tm.length < 1 ||
@@ -53,7 +53,7 @@ exports.editCategory = catchAsync(async(req, res, next) => {
     )
         return next(new AppError('Invalid Credentials', 400));
 
-    await category.update({ name_tm, name_ru, name_en });
+    await category.update({ name_tm, name_ru, sequence });
 
     return res.status(200).send(category);
 });
