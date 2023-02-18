@@ -13,14 +13,14 @@ exports.enterToCompetition = catchAsync(async(req, res, next) => {
     req.body.userId = req.user.id
     const sharing_user = await Sharingusers.create(req.body)
     await Users.update({isParticipating:true},{where:{id:req.user.id}})
-    const link = "http://10.192.168.23:3000/hyzmatlar/share/" + freeproduct.freeproduct_id
-
+    const link = "http://216.250.9.29:3000/hyzmatlar/share/" + freeproduct.freeproduct_id+"?sharinguser_id="+sharing_user.sharinguser_id
     return res.status(201).send({sharing_user,link})
 })
 exports.generateLink = catchAsync(async(req, res, next) => {
     const freeproduct = await Freeproducts.findOne({ where: { freeproduct_id: req.body.freeproduct_id } })
+    const sharing_user=await Sharingusers.findOne({where:{userId:req.user.id}})
     if (!freeproduct) return next(new AppError("Free product with that id not found", 404))
-    const link = "http://10.192.168.23:3000/hyzmatlar/share/" + freeproduct.freeproduct_id
+    const link = "http://216.250.9.29:3000/hyzmatlar/share/" + freeproduct.freeproduct_id+"?sharinguser_id="+sharing_user.sharinguser_id
     return res.status(200).send(link)
 })
 exports.addOne = catchAsync(async(req, res, next) => {
@@ -35,8 +35,7 @@ exports.addOne = catchAsync(async(req, res, next) => {
         count: sharing_user.count + 1
     })
     await Users.update({isParticipating:true},{where:{id:req.user.id}})
-
-    const link = "http://10.192.168.23:3000/hyzmatlar/share/" + freeproduct.freeproduct_id
+    const link = "http://216.250.9.29:3000/hyzmatlar/share/" + freeproduct.freeproduct_id+"?sharinguser_id="+sharing_user.sharinguser_id
     return res.status(200).send({ sharing_user,link })
 })
 exports.deleteCompetitor = catchAsync(async(req, res, next) => {
