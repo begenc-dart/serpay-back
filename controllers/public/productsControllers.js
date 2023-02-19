@@ -1,4 +1,4 @@
-const { Op } = require('sequelize');
+const { Op, where } = require('sequelize');
 const {
     Products,
     Categories,
@@ -110,7 +110,7 @@ exports.getTopProducts = catchAsync(async(req, res) => {
             as: "images"
         },
     });
-    const count=await Products.count({where:{sellerId:null}})
+    const count=await Products.count({where})
     const products={
         count,
         rows:productss
@@ -452,21 +452,6 @@ exports.actionProducts = catchAsync(async(req, res, next) => {
     let order, where = []
     // where.push({ isActive: true })
     where=getWhere(req.query)
-    // if (sort == 1) {
-    //     order = [
-    //         ['price', 'DESC']
-    //     ];
-    // } else if (sort == 0) {
-    //     order = [
-    //         ['price', 'ASC']
-    //     ];
-    // } else if (sort == 3) {
-    //     order = [
-    //         ["sold_count", "DESC"]
-    //     ]
-    // } else order = [
-    //     ['updatedAt', 'DESC']
-    // ];
     order=getOrder(req.query)
     if (discount && discount != "false") {
         let discount = {
@@ -556,7 +541,7 @@ exports.getMostSearches=catchAsync(async(req,res,next)=>{
     })
     return res.send(searchhistory)
 })
-function getWhere({ max_price, min_price, sex,isNew }) {
+function getWhere({ max_price, min_price, sex,is_new }) {
     let where = []
     if (max_price && min_price == "") {
         let price = {
@@ -586,7 +571,7 @@ function getWhere({ max_price, min_price, sex,isNew }) {
         }
         where.push(price)
     }
-    // where.push({isActive:true})
+    if(is_new && is_new=="true") where.push({isNew:true})
     return where
 }
 function getOrder({sort}){
