@@ -29,19 +29,59 @@ exports.getAll = catchAsync(async(req, res, next) => {
 })
 exports.sellerProduct = catchAsync(async(req, res, next) => {
     let seller_id = req.params.id
+    const limit=req.query.limit || 20
+    const offset=req.query.offset || 0
     const seller = await Seller.findOne({ where: { seller_id } })
     if (!seller) {
         return next(new AppError(`Seller with id ${seller_id} not found`))
     }
-    let product = await Products.findAndCountAll({
-        where: { sellerId: seller.id, isActive: true },
+    const {sort,discount,isAction}=req.query
+
+    let order, where = []
+    where=getWhere(req.query)
+    if (sort == 1) {
+        order = [
+            ['price', 'DESC']
+        ];
+    } else if (sort == 0) {
+        order = [
+            ['price', 'ASC']
+        ];
+    } else if (sort == 3) {
+        order = [
+            ["sold_count", "DESC"]
+        ]
+    } else order = [
+        ['updatedAt', 'DESC']
+    ];
+
+    if (discount && discount != "false") {
+        let discount = {
+            [Op.ne]: 0
+        }
+        where.push({ discount })
+    }
+    if (isAction) {
+        where.push({ isAction })
+    }
+    where.push({ sellerId: seller.id })
+    order.push(["images", "id", "DESC"])
+    let productss = await Products.findAll({
+        where,
+        limit,
+        offset,
         include: [{
             model: Images,
             as: "images"
         }]
     })
-    product = await isLiked(product, req)
-    return res.send({ seller, product })
+    const count = await Products.count({ where })
+    productss = await isLiked(productss, req)
+    const products={
+        data:productss,
+        count
+    }
+    return res.send({ seller, products })
 })
 const capitalize = function(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
