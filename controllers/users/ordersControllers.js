@@ -349,14 +349,14 @@ exports.getNotOrderedProducts = catchAsync(async(req, res, next) => {
             obj.size = product_size.size
             obj.price = product_size.price
             obj.price_old = product_size.price_old
-            obj.total_price = (product_size.price * order_products[i].quantity).toFixed(2)
+            obj.total_price = (product_size.price * order_products[i].quantity)
             obj.product_size_id = product_size.product_size_id
             obj.productsizes=product.product_sizes
             // obj.productsize_stock=product_size.stock
         } else if (product) {
             obj.price = product.price
             obj.price_old = product.price_old
-            obj.total_price = (product.price * order_products[i].quantity).toFixed(2)
+            obj.total_price = (product.price * order_products[i].quantity)  
             obj.stock=product.product_stock[0].quantity
         }
         checked_products.push(obj);
