@@ -33,7 +33,7 @@ exports.sellerProduct = catchAsync(async(req, res, next) => {
     if (!seller) {
         return next(new AppError(`Seller with id ${seller_id} not found`))
     }
-    const product = await Products.findAndCountAll({
+    let product = await Products.findAndCountAll({
         where: { sellerId: seller.id, isActive: true },
         include: [{
             model: Images,

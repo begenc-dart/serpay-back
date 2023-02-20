@@ -44,7 +44,7 @@ exports.verify_code_forgotten = catchAsync(async(req, res, next) => {
         }
 
         const generated_code = randomstring.generate({
-            length: 6,
+            length: 5,
             charset: "numeric"
         })
 
@@ -143,7 +143,7 @@ exports.login = catchAsync(async(req, res, next) => {
     createSendToken(user, 200, res);
 });
 
-exports.forgotPassword = catchAsync(async(req, res, next) => {
+exports. forgotPassword = catchAsync(async(req, res, next) => {
     if (req.body.user_checked_phone) {
         const { user_checked_phone, newPassword, newPasswordConfirm } = req.body;
 
