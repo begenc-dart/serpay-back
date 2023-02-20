@@ -75,6 +75,7 @@ exports.getSubcategoryProducts = catchAsync(async(req, res, next) => {
     if (discount && discount != "false") where.discount = {
         [Op.ne]: 0
     }
+    where.isActive=true
     where.subcategoryId = subcategory.id
     order.push(["images", "id", "DESC"])
     const products = await Products.findAll({

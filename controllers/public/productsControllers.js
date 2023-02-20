@@ -572,6 +572,7 @@ function getWhere({ max_price, min_price, sex,is_new }) {
         where.push(price)
     }
     if(is_new && is_new=="true") where.push({isNew:true})
+    where.push({isActive:true})
     return where
 }
 function getOrder({sort}){

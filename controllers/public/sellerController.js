@@ -39,7 +39,6 @@ exports.sellerProduct = catchAsync(async(req, res, next) => {
     const {sort,discount,isAction}=req.query
 
     let order, where = []
-    // where.push({ isActive: true })
     where=getWhere(req.query)
     if (sort == 1) {
         order = [
@@ -150,5 +149,6 @@ function getWhere({ max_price, min_price, sex,isNew }) {
         where.push(array)
         if(isNew) where.push({isNew})
     }
+    where.push({isActive:true})
     return where
 }
