@@ -51,6 +51,18 @@ exports.addMyOrders = catchAsync(async(req, res, next) => {
             var seller = await Seller.findOne({ seller_id: order_products[0].seller_id })
             sellerId = seller.id
         }
+        console.log(123,req.body.delivery_time)
+        let delivery_time = req.body.delivery_time.split(" ")
+        let time = delivery_time[1]
+        const today = new Date()
+        if (i_take) time = ""
+        if (delivery_time[0] == "1") {
+            const tomorrow = new Date(today)
+            tomorrow.setDate(tomorrow.getDate() + 1)
+            delivery_time = lessThan(tomorrow.getDate()) + "." + lessThan(tomorrow.getMonth() + 1) + "/" + time
+        } else {
+            delivery_time = lessThan(today.getDate()) + "." + lessThan(today.getMonth() + 1) + "/" + time
+        }
         const order = await Orders.create({
             userId: req.user.id,
             total_price,
@@ -62,7 +74,7 @@ exports.addMyOrders = catchAsync(async(req, res, next) => {
             note,
             sellerId,
             status: "Garashylyar",
-            delivery_time:"9:00",
+            delivery_time,
             total_quantity,
         });
         orders_array.push(order)
@@ -435,3 +447,14 @@ exports.deleteAllOrderedProducts = catchAsync(async(req, res, next) => {
     }
     return res.status(200).send({ msg: "Success" })
 })
+function takeDate() {
+    const date = new Date()
+    let time = date.getMonth() + "." + date.getDay() + "." + date.getHours() + "." + date.getMinutes()
+
+    return time
+}
+
+function lessThan(number) {
+    if (number < 10) return "0" + number
+    return number
+}
