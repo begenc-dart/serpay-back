@@ -17,7 +17,7 @@ const AppError = require('../../utils/appError');
 exports.getProducts = catchAsync(async(req, res) => {
     const limit = req.query.limit || 10;
     const { offset } = req.query;
-    var order, where;
+    var order, where={};
     where.isActive=true
     let products = await Products.findAll({
         order,

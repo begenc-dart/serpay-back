@@ -20,7 +20,6 @@ exports.getProducts = catchAsync(async(req, res) => {
     const { offset } = req.query;
     var order, where;
     const products = await Products.findAll({
-        isActive: true,
         order,
         limit,
         offset,
@@ -28,7 +27,7 @@ exports.getProducts = catchAsync(async(req, res) => {
             model: Images,
             as: "images"
         }, ],
-        where
+        where:{isActive:true}
     });
     return res.status(200).json(products);
 });

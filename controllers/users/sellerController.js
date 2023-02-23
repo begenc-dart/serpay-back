@@ -97,3 +97,49 @@ async function isLiked(products, req) {
     }
     return products
 };
+function getWhere({ max_price, min_price, sex,isNew }) {
+    let where = []
+    if (max_price && min_price == "") {
+        let price = {
+            [Op.lte]: max_price
+        }
+
+        where.push({ price })
+    } else if (max_price == "" && min_price) {
+        let price = {
+            [Op.gte]: min_price
+        }
+        where.push({ price })
+
+    } else if (max_price && min_price) {
+        let price = {
+            [Op.and]: [{
+                    price: {
+                        [Op.gte]: min_price
+                    }
+                },
+                {
+                    price: {
+                        [Op.lte]: max_price
+                    }
+                }
+            ],
+        }
+        where.push(price)
+    }
+    if (sex) {
+        sex.split = (",")
+        var array = []
+        for (let i = 0; i < sex.length; i++) {
+            array.push({
+                sex: {
+                    [Op.eq]: sex[i]
+                }
+            })
+        }
+        where.push(array)
+        if(isNew) where.push({isNew})
+    }
+    where.push({isActive:true})
+    return where
+}
