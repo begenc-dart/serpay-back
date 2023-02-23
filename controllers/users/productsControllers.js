@@ -18,9 +18,8 @@ exports.getProducts = catchAsync(async(req, res) => {
     const limit = req.query.limit || 10;
     const { offset } = req.query;
     var order, where;
-
+    where.isActive=true
     let products = await Products.findAll({
-        isActive: true,
         order,
         limit,
         offset,

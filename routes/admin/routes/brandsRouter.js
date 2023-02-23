@@ -17,7 +17,7 @@ router.get("/:id", getBrand)
 router.post('/add', addBrand);
 router.post('/add-category/:id', addBrandCategory);
 router.patch('/:id', editBrand);
-router.delete('/:id', deleteBrand);
+router.post('/delete/:id', deleteBrand);
 router.delete('/delete-category', deleteBrandCategory);
 router.post('/upload-image/:id', uploadBrandImage);
 

@@ -17,6 +17,6 @@ router.post('/add', addCategory);
 router.post("/brands/add", addCategoryBrand)
 router.post("/upload-image/:id", uploadCategoryImage)
 router.patch('/:id', editCategory);
-router.delete('/delete/:id', deleteCategory);
+router.post('/delete/:id', deleteCategory);
 
 module.exports = router;

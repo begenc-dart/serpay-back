@@ -10,5 +10,5 @@ router.get("/accounting",getAccount)
 router.get("/:id", oneSeller)
 router.get("/product/:id", getOneProduct)
 router.patch("/product/:id", editProduct)
-router.delete("/:id", deleteSeller)
+router.post("/delete/:id", deleteSeller)
 module.exports = router;

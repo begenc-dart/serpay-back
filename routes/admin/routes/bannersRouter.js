@@ -16,7 +16,7 @@ router.get('/', getAllBanners);
 router.get('/:id', getBanner);
 router.post('/add', addBanner);
 router.patch("/:id", editBanner)
-router.delete('/:id', deleteBanner);
+router.post('/delete/:id', deleteBanner);
 router.post('/upload-image/:id', uploadBannerImage);
 
 module.exports = router;

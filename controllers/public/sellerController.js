@@ -13,6 +13,7 @@ exports.getAll = catchAsync(async(req, res, next) => {
     const limit = req.query.limit || 20;
     let { keyword, offset, sort } = req.query;
     let keywordsArray = [];
+
     if (keyword) {
         keyword = keyword.toLowerCase();
         keywordsArray.push('%' + keyword + '%');
@@ -25,6 +26,7 @@ exports.getAll = catchAsync(async(req, res, next) => {
         ],
         limit,
         offset,
+        where:{isActive:true}
     });
     return res.status(200).send({ sellers })
 })
