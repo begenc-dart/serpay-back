@@ -33,7 +33,7 @@ exports.getProducts = catchAsync(async(req, res) => {
 });
 exports.getOwnerProducts = catchAsync(async(req, res) => {
     const limit = req.query.limit || 10;
-    const { offset } = req.query;
+    const { offset } = req.query || 0;
     const {sort,discount,isAction}=req.query
     let order, where = []
     if (sort == 1) {

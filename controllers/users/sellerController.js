@@ -2,7 +2,8 @@ const { Op } = require('sequelize');
 const {
     Products,
     Images,
-    Seller
+    Seller,
+    Likedproducts
 } = require('../../models');
 const catchAsync = require('../../utils/catchAsync');
 const AppError = require('../../utils/appError');
