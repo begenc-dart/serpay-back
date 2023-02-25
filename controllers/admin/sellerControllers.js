@@ -63,17 +63,31 @@ exports.allSellers = catchAsync(async(req, res, next) => {
 })
 exports.oneSeller = catchAsync(async(req, res, next) => {
     let seller_id = req.params.id
-    console.log(seller_id, 473987492739)
     let seller = await Seller.findOne({
-        where: { seller_id },
+        // where: { seller_id },
         include: [{
             model: Products,
             as: "products",
-            include: {
+            include: [{
                 model: Images,
-                as: "images"
+                as: "images",
+                limit: 4
+            },
+            {
+                model: Productcolor,
+                as: "product_colors",
+                limit: 1
+            },
+            {
+                model: Productsizes,
+                as: "product_sizes"
             }
-        }]
+        ],
+    }],
+    order: [
+        ["products",'id', 'DESC'],
+        // ["images", "id", "DESC"]
+    ],
     })
     return res.send(seller)
 })
@@ -148,6 +162,15 @@ if (startTime) {
         sum+=order_product.total_price
     }
     return res.send({sum})
+})
+exports.editSellerProduct=catchAsync(async(req,res,next)=>{
+    const product = await Products.findOne({
+        where: { product_id: req.params.id },
+    });
+    if (!product)
+        return next(new AppError('Product did not found with that ID', 404))
+    await product.update(req.body);
+    return res.status(200).send(product);
 })
 const capitalize = function(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
