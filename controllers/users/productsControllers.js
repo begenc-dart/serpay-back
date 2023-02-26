@@ -10,7 +10,8 @@ const {
     Details,
     Likedproducts,
     Subcategories,
-    Searchhistory
+    Searchhistory,
+    Seller
 } = require('../../models');
 const catchAsync = require('../../utils/catchAsync');
 const AppError = require('../../utils/appError');
@@ -126,6 +127,9 @@ exports.getOneProduct = catchAsync(async(req, res, next) => {
             {
                 model: Brands,
                 as: "brand"
+            },{
+                model:Seller,
+                as:"seller"
             }
         ]
     })
