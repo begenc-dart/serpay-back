@@ -341,7 +341,6 @@ exports.discount = catchAsync(async(req, res, next) => {
     where = getWhere(req.query)
     let discount = {
         [Op.ne]: 0,
-        [Op.not]:null
     }
     where.push({ discount })
     if (isAction) where.push({ isAction })
