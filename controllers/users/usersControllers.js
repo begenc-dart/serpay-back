@@ -157,6 +157,8 @@ exports.getUsersLikedProducts = catchAsync(async(req, res, next) => {
     ]
     const liked_product = await Users.findOne({
         where: { user_id: req.user.user_id },
+        limit,
+        offset,
         include: {
             model: Products,
             as: "liked_products",

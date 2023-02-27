@@ -63,11 +63,20 @@ exports.allSellers = catchAsync(async(req, res, next) => {
 })
 exports.oneSeller = catchAsync(async(req, res, next) => {
     let seller_id = req.params.id
+    const limit=req.query.limit ||20
+    const offset=req.query.offset ||0
     let seller = await Seller.findOne({
-        // where: { seller_id },
+        where: { seller_id },
         include: [{
             model: Products,
             as: "products",
+            separate:true,
+            order: [
+                ['id', 'DESC'],
+                // ["images", "id", "DESC"]
+            ],
+            limit,
+            offset,
             include: [{
                 model: Images,
                 as: "images",
@@ -84,12 +93,9 @@ exports.oneSeller = catchAsync(async(req, res, next) => {
             }
         ],
     }],
-    order: [
-        ["products",'id', 'DESC'],
-        // ["images", "id", "DESC"]
-    ],
-    })
-    return res.send(seller)
+})
+    const count=await Products.count({where: {sellerId:seller.id}})
+    return res.send({seller,count})
 })
 exports.deleteSeller = catchAsync(async(req, res, next) => {
     const seller = await Seller.findOne({ where: { seller_id: req.params.id }, include: { model: Products, as: "products" } })
