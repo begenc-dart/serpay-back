@@ -10,7 +10,8 @@ const {
     Details,
     Likedproducts,
     Subcategories,
-    Searchhistory
+    Searchhistory,
+    Seller
 } = require('../../models');
 const catchAsync = require('../../utils/catchAsync');
 const AppError = require('../../utils/appError');
@@ -126,6 +127,9 @@ exports.getOneProduct = catchAsync(async(req, res, next) => {
             {
                 model: Brands,
                 as: "brand"
+            },{
+                model:Seller,
+                as:"seller"
             }
         ]
     })
@@ -305,7 +309,7 @@ exports.searchProducts = catchAsync(async(req, res, next) => {
         offset
     })
     const products={
-        data:await isLiked(productss),
+        data:await isLiked(productss,req),
         count:count
     }
     const searchhistory=await Searchhistory.findOne({where:{name:keyword2}})
@@ -336,7 +340,8 @@ exports.discount = catchAsync(async(req, res, next) => {
     ];
     where = getWhere(req.query)
     let discount = {
-        [Op.ne]: 0
+        [Op.ne]: 0,
+        [Op.not]:null
     }
     where.push({ discount })
     if (isAction) where.push({ isAction })

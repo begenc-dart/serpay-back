@@ -276,6 +276,7 @@ exports.getNotOrderedProducts = catchAsync(async(req, res, next) => {
     where.userId=req.user.id
     where.is_ordered=false
     if(req.query.isSelected) where.isSelected=req.query.isSelected 
+    if(req.query.seller_id) where.seller_id=req.query.seller_id
     const order_products = await Orderproducts.findAll({ where, limit, offset,order:[["createdAt","DESC"]] })
     const checked_products = []
 
