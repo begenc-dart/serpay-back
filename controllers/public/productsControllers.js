@@ -36,17 +36,7 @@ exports.getOwnerProducts = catchAsync(async(req, res) => {
     const { offset } = req.query || 0;
     const {sort,discount,isAction}=req.query
     let order, where = []
-    if (sort == 1) {
-        order = [
-            ['price', 'DESC']
-        ];
-    } else if (sort == 0) {
-        order = [
-            ['price', 'ASC']
-        ];
-    } else order = [
-        ['updatedAt', 'DESC']
-    ];
+    order=getOrder(req.query)
     where = getWhere(req.query)
     if (discount && discount != "false") {
         let discount = {
@@ -80,17 +70,7 @@ exports.getTopProducts = catchAsync(async(req, res) => {
     const offset = req.query.offset || 0;
     const { sort, isAction, discount } = req.query
     let order, where = []
-    if (sort == 1) {
-        order = [
-            ['price', 'DESC']
-        ];
-    } else if (sort == 0) {
-        order = [
-            ['price', 'ASC']
-        ];
-    } else order = [
-        ['updatedAt', 'DESC']
-    ];
+    order=getOrder(req.query)
     where = getWhere(req.query)
     if (discount && discount != "false") {
         let discount = {[Op.ne]: 0}
@@ -123,22 +103,7 @@ exports.getLikedProducts = catchAsync(async(req, res) => {
     let order, where = []
 
     where=getWhere(req.query)
-    // where.push({ isActive: true })
-    if (sort == 1) {
-        order = [
-            ['price', 'DESC']
-        ];
-    } else if (sort == 0) {
-        order = [
-            ['price', 'ASC']
-        ];
-    } else if (sort == 3) {
-        order = [
-            ["sold_count", "DESC"]
-        ]
-    } else order = [
-        ['updatedAt', 'DESC']
-    ];
+    order=getOrder(req.query)
     if (discount && discount != "false") {
         let discount = {
             [Op.ne]: 0
@@ -175,18 +140,7 @@ exports.searchProducts = catchAsync(async(req, res, next) => {
     const limit = req.query.limit || 20;
     let { keyword, offset, sort } = req.query;
     var order;
-    if (sort == 1) {
-        order = [
-            ['price', 'DESC']
-        ];
-    } else if (sort == 0) {
-        order = [
-            ['price', 'ASC']
-        ];
-    } else order = [
-        ['updatedAt', 'DESC']
-    ];
-
+    order=getOrder(req.query)
     let keywordsArray = [];
     let keyword2=keyword
     keyword = keyword.toLowerCase();
@@ -405,21 +359,7 @@ exports.discount = catchAsync(async(req, res, next) => {
     const offset = req.query.offset || 0;
     const { sort, isAction } = req.query
     let order, where = []
-    if (sort == 1) {
-        order = [
-            ['price', 'DESC']
-        ];
-    } else if (sort == 0) {
-        order = [
-            ['price', 'ASC']
-        ];
-    } else if (sort == 3) {
-        order = [
-            ["sold_count", "DESC"]
-        ]
-    } else order = [
-        ['updatedAt', 'DESC']
-    ];
+    order=getOrder(req.query)
     where = getWhere(req.query)
     let discount = {
         [Op.ne]: 0,
@@ -482,24 +422,8 @@ exports.newProducts = catchAsync(async(req, res) => {
     const offset = req.query.offset || 0;
     const { sort, isAction, discount } = req.query
     let order, where = []
-    // where.push({ isActive: true })
-
-    if (sort == 1) {
-        order = [
-            ['price', 'DESC']
-        ];
-    } else if (sort == 0) {
-        order = [
-            ['price', 'ASC']
-        ];
-    } else if (sort == 3) {
-        order = [
-            ["sold_count", "DESC"]
-        ]
-    } else order = [
-        ['updatedAt', 'DESC']
-    ];
-
+    order=getOrder(req.query)
+    where=getWhere(req.query)
     if (discount && discount != "false") {
         let discount = {
             [Op.ne]: 0
@@ -512,7 +436,7 @@ exports.newProducts = catchAsync(async(req, res) => {
     where.push({ isNew: true })
     order.push(["images", "id", "DESC"])
     const new_products = await Products.findAll({
-        where, //isActive goy
+        where, 
         order,
         limit,
         offset,

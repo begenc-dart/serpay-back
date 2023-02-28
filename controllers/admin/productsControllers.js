@@ -362,6 +362,12 @@ exports.editProduct = catchAsync(async(req, res, next) => {
         req.body.price =(req.body.price_old / 100) *(100 - req.body.discount);
         req.body.price_old = req.body.price_old;
     }
+    const category=await Categories.findOne({where:{category_id:req.body.category_id}})
+    req.body.categoryId=category.id
+    if(req.body.subcategory_id){
+        const subcategory=await Subcategories.findOne({where:{subcategory_id:req.body.subcategory_id}})
+        req.body.subcategoryId=subcategory.id
+    }
     await product.update(req.body);
     return res.status(200).send(product);
 });

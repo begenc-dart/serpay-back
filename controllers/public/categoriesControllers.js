@@ -59,29 +59,37 @@ exports.getCategoryProducts = catchAsync(async(req, res, next) => {
     const category = await Categories.findOne({
         where: { category_id: req.params.id },
     });
-
+    const limit=req.query.limit || 20
+    const offset=req.query.offset || 0
     if (!category)
-        return next(new AppError('Category did not found with that ID', 404));
-
-    const limit = req.query.limit || 20;
-    const offset = req.query.offset;
-    const sort = req.query.sort;
-
-    var order;
+    return next(new AppError('Category did not found with that ID', 404));
+    
+    const { sort, isAction } = req.query
+    let order, where = {}
     if (sort == 1) {
         order = [
             ['price', 'DESC']
         ];
-    } else if (sort == 0) {
-        order = [
-            ['price', 'ASC']
+        } else if (sort == 0) {
+            order = [
+                ['price', 'ASC']
+            ];
+        } else if (sort == 3) {
+            order = [
+                ["sold_count", "DESC"]
+            ]
+        } else order = [
+            ['updatedAt', 'DESC']
         ];
-    } else order = [
-        ['updatedAt', 'DESC']
-    ];
-    order.push(["images", "id", "DESC"])
+        where = getWhere(req.query)
+        let discount = {
+            [Op.ne]: 0,
+        }
+        where.push({ discount })
+        if (isAction) where.push({ isAction })
+        where.push({ categoryId:category.id })
     const products = await Products.findAll({
-        where: { categoryId: category.id }, //isActive goy sonundan
+        where,
         order,
         limit,
         offset,
@@ -90,9 +98,54 @@ exports.getCategoryProducts = catchAsync(async(req, res, next) => {
             as: "images"
         }]
     });
-    const count = await Products.count({ where: { categoryId: category.id } })
+    const count = await Products.count({ where})
     return res.status(200).send({ products, count });
 });
 const capitalize = function(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 };
+function getWhere({ max_price, min_price, sex,is_new }) {
+    let where = []
+    if (max_price && min_price == "") {
+        let price = {
+            [Op.lte]: max_price
+        }
+        where.push({ price })
+    } else if (max_price == "" && min_price) {
+        let price = {
+            [Op.gte]: min_price
+        }
+        where.push({ price })
+
+    } else if (max_price && min_price) {
+        let price = {
+            [Op.and]: [{
+                    price: {
+                        [Op.gte]: min_price
+                    }
+                },
+                {
+                    price: {
+                        [Op.lte]: max_price
+                    }
+                }
+            ],
+        }
+        where.push(price)
+    }
+    if (sex) {
+        sex.split = (",")
+        var array = []
+        for (let i = 0; i < sex.length; i++) {
+            array.push({
+                sex: {
+                    [Op.eq]: sex[i]
+                }
+            })
+        }
+        where.push(array)
+    }
+    if(is_new && is_new=="true") where.push({isNew:true})
+    where.push({isActive:true})
+    return where
+}
