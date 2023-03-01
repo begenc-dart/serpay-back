@@ -20,7 +20,7 @@ exports.getProducts = catchAsync(async(req, res) => {
     const { offset } = req.query;
     var order, where;
     const products = await Products.findAll({
-        order,
+        order:[["createdAt","DESC"]],
         limit,
         offset,
         include: [{
@@ -327,25 +327,12 @@ exports.getOneProduct = catchAsync(async(req, res, next) => {
     if (!oneProduct) {
         return next(new AppError("Can't find product with that id"), 404);
     }
-    const id = oneProduct.categoryId
-    const recommenendations = await Categories.findOne({
-        where: { id },
+    const sellerId = oneProduct.sellerId
+    const recommenendations = await Products.findAll({
+        where: { sellerId,id:{[Op.not]:oneProduct.id} },
         include: {
-            model: Products,
-            as: "products",
-            where: {
-                id: {
-                    [Op.ne]: oneProduct.id
-                }
-            },
-            limit: 4,
-            order: [
-                ["id", "DESC"]
-            ],
-            include: {
-                model: Images,
-                as: "images",
-            }
+            model: Images,
+            as: "images",
         }
     })
     const product = {

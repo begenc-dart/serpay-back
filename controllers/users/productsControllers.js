@@ -21,7 +21,7 @@ exports.getProducts = catchAsync(async(req, res) => {
     var order, where={};
     where.isActive=true
     let products = await Products.findAll({
-        order,
+        order:[["createdAt","DESC"]],
         limit,
         offset,
         include: [{
