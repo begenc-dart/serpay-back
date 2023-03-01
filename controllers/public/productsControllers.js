@@ -333,7 +333,8 @@ exports.getOneProduct = catchAsync(async(req, res, next) => {
         include: {
             model: Images,
             as: "images",
-        }
+        },
+        limit:10
     })
     const product = {
         oneProduct,
