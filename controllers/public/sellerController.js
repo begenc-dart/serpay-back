@@ -39,7 +39,6 @@ exports.sellerProduct = catchAsync(async(req, res, next) => {
         return next(new AppError(`Seller with id ${seller_id} not found`))
     }
     const {sort,discount,isAction}=req.query
-
     let order, where = []
     where=getWhere(req.query)
     if (sort == 1) {
@@ -57,7 +56,6 @@ exports.sellerProduct = catchAsync(async(req, res, next) => {
     } else order = [
         ['updatedAt', 'DESC']
     ];
-
     if (discount && discount != "false") {
         let discount = {
             [Op.ne]: 0
@@ -73,6 +71,7 @@ exports.sellerProduct = catchAsync(async(req, res, next) => {
         where,
         limit,
         offset,
+        order,
         include: [{
             model: Images,
             as: "images"

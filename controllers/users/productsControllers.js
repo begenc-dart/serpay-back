@@ -74,6 +74,11 @@ exports.getOwnerProducts = catchAsync(async(req, res) => {
 });
 exports.getOneProduct = catchAsync(async(req, res, next) => {
     const product_id = req.params.id
+
+    let where={}
+    if(isUUID(product_id)) {
+        where.product_id=product_id
+    }
     const oneProduct = await Products.findOne({
         where: { product_id },
         include: [{

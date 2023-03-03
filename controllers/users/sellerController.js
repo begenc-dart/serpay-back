@@ -71,6 +71,7 @@ exports.sellerProduct = catchAsync(async(req, res, next) => {
         where,
         limit,
         offset,
+        order,
         include: [{
             model: Images,
             as: "images"
