@@ -17,7 +17,7 @@ exports.verify_code = catchAsync(async(req, res, next) => {
         }
         const generated_code = randomstring.generate({
             length: 6,
-            charset: "numeric"
+            charset: "123456789"
         })
         const obj = {
             code: generated_code,
@@ -44,8 +44,8 @@ exports.verify_code_forgotten = catchAsync(async(req, res, next) => {
         }
 
         const generated_code = randomstring.generate({
-            length: 5,
-            charset: "numeric"
+            length: 6,
+            charset: "123456789"
         })
 
         const obj = {

@@ -45,7 +45,7 @@ exports.getAllCategories = catchAsync(async(req, res) => {
         order: [
             ['sequence', 'ASC'],
             ["createdAt", 'DESC'], 
-            ["subcategories", "createdAt", "DESC"],
+            ["subcategories", "sequence", "ASC"],
         ],
         include: {
             model: Subcategories,

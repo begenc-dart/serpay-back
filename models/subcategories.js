@@ -39,6 +39,10 @@ module.exports = (sequelize, DataTypes) => {
                 },
             },
         },
+        sequence:{
+            type:DataTypes.INTEGER,
+            defaultValue:1
+        },
         image: DataTypes.STRING,
         categoryId: DataTypes.INTEGER
     }, {
