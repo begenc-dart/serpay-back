@@ -64,7 +64,7 @@ exports.getAllActiveProducts = catchAsync(async(req, res) => {
             limit: 4
         },
         order: [
-            ['id', 'DESC'],
+            ['updatedAt', 'DESC'],
             // ["images", "id", "DESC"]
         ],
     });

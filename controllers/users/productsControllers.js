@@ -14,6 +14,7 @@ const {
     Seller
 } = require('../../models');
 const catchAsync = require('../../utils/catchAsync');
+const {isUUID}=require("validator")
 const AppError = require('../../utils/appError');
 exports.getProducts = catchAsync(async(req, res) => {
     const limit = req.query.limit || 10;
@@ -79,8 +80,9 @@ exports.getOneProduct = catchAsync(async(req, res, next) => {
     if(isUUID(product_id)) {
         where.product_id=product_id
     }
+    else where.product_code=product_id
     const oneProduct = await Products.findOne({
-        where: { product_id },
+        where,
         include: [{
                 model: Productcolor,
                 as: "product_colors",
@@ -232,7 +234,7 @@ exports.searchProducts = catchAsync(async(req, res, next) => {
     const limit = req.query.limit || 20;
     let { keyword, offset, sort } = req.query;
     var order;
-    order=getOrder()
+    order=getOrder(req.query)
 
     let keywordsArray = [];
     let keyword2=keyword

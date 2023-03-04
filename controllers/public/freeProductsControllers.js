@@ -22,6 +22,7 @@ exports.getAllFreeProducts = catchAsync(async(req, res, next) => {
         }
     })    
     let index=0
+    if(!free_products) return res.send({expire_time:null,data:null})
     for(const free_product of free_products) {
         const max = await Sharingusers.max("count", { where: { freeproductId: free_product.id } })
         const count=await Sharingusers.count({where:{freeproductId:free_product.id}})

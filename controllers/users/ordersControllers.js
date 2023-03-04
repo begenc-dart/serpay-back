@@ -48,7 +48,7 @@ exports.addMyOrders = catchAsync(async(req, res, next) => {
     }
         let sellerId = 0
         if (order_products[0].seller_id) {
-            var seller = await Seller.findOne({ seller_id: order_products[0].seller_id })
+            var seller = await Seller.findOne({where:{ seller_id: order_products[0].seller_id }})
             sellerId = seller.id
         }
         console.log(123,req.body.delivery_time)

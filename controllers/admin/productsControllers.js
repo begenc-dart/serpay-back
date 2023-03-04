@@ -19,6 +19,7 @@ const {
 
     Details
 } = require('../../models');
+const { discount } = require('../users/productsControllers');
 const include = [{
         model: Stock,
         as: 'product_stock',
@@ -531,16 +532,31 @@ exports.setId = catchAsync(async(req, res, next) => {
 exports.setDiscount=catchAsync(async(req,res,next)=>{   
     const products=await Products.findAll({where:{sellerId:req.seller.id}})
     for (const product of products){
-        if(product.price_old>0) product.price=product.price_old
-        await Products.update({
-        price_old:product.price,price:(product.price/100)*(100-req.body.discount),discount:req.body.discount},
-        {where:{id:product.id}})
+        if(discount>0){
+            if(product.price_old>0) product.price=product.price_old
+            await Products.update({
+                price_old:product.price,price:(product.price/100)*(100-req.body.discount),discount:req.body.discount},
+                {where:{id:product.id}}) 
+        }
+            else if(discount==0){
+                if(product.price_old==null) product.price_old=product.price
+                await Products.update({
+                    price:product.price_old,price_old:null,discount:req.body.discount},
+                    {where:{id:product.id}})
+            }
         const product_size=await Productsizes.findAll({where:{productId:product.id}})
         for(const size of product_size){
-            if(size.discount>0) size.price=size.price_old
-            await Productsizes.update({price_old:product.price,price:(product.price/100)*(100-req.body.discount),discount:req.body.discount},
-            {where:{id:size.id}}
-            )
+            if(discount>0){
+                if(size.price_old>0) size.price=size.price_old
+                await Productsizes.update({
+                    price_old:size.price,price:(size.price/100)*(100-req.body.discount),discount:req.body.discount},
+                    {where:{id:size.id}}) 
+            }else if(discount==0){
+                if(size.price_old==null) size.price_old=size.price
+                await Productsizes.update({
+                    price:size.price_old,price_old:null,discount:req.body.discount},
+                    {where:{id:size.id}})
+            }
         }
     }
     return res.status(200).send("Sucess")
