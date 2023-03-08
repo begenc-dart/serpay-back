@@ -12,6 +12,7 @@ const {
     Seller,
     Searchhistory
 } = require('../../models');
+const reader = require('xlsx')
 const catchAsync = require('../../utils/catchAsync');
 const AppError = require('../../utils/appError');
 const {isUUID}=require("validator")
@@ -200,6 +201,53 @@ exports.searchProducts = catchAsync(async(req, res, next) => {
     else await searchhistory.update({count:searchhistory.count+1})
 
     return res.status(200).send({ products, subcategories, seller });
+});
+exports.searchProductsMore = catchAsync(async(req, res, next) => {
+    const limit = req.query.limit || 20;
+    let { keyword, offset, sort } = req.query;
+    var order;
+    order=getOrder(req.query)
+    let keywordsArray = [];
+    keyword = keyword.toLowerCase();
+    keywordsArray.push('%' + keyword + '%');
+    keyword = '%' + capitalize(keyword) + '%';
+    keywordsArray.push(keyword);
+    let where = {
+        [Op.or]: [{
+                name_tm: {
+                    [Op.like]: {
+                        [Op.any]: keywordsArray,
+                    },
+                },
+            },
+            {
+                name_ru: {
+                    [Op.like]: {
+                        [Op.any]: keywordsArray,
+                    },
+                },
+
+            },
+        ],
+    }
+    const productss = await Products.findAll({
+        where,
+        order,
+        limit,
+        offset,
+        include:[
+            {
+                model:Images,
+                as:"images"
+            }
+        ]
+    });
+    const count=await Products.count({where})
+    const products={
+        data:productss,
+        count:count
+    }
+    return res.status(200).send({ products});
 });
 exports.searchLite = catchAsync(async(req, res, next) => {
     let { keyword } = req.query
@@ -452,6 +500,53 @@ exports.getMostSearches=catchAsync(async(req,res,next)=>{
         order:[["count","DESC"]]
     })
     return res.send(searchhistory)
+})
+exports.addFromExcel=catchAsync(async(req,res,next)=>{
+    const file = reader.readFile('./test.xlsx')
+      
+    let data = []
+      
+    const sheets = file.SheetNames
+      
+    for(let i = 0; i < sheets.length; i++)
+    {
+       const temp = reader.utils.sheet_to_json(
+            file.Sheets[file.SheetNames[i]])
+       temp.forEach((res) => {
+          data.push(res)
+       })
+    }
+    console.log(data)
+    for(let oneData of data){
+        const obj={
+            name_tm:oneData.name_tm,
+            name_ru:oneData.name_ru,
+            body_ru:oneData.body_ru,
+            body_tm:oneData.body_tm,
+            product_code:oneData.product_code,
+            price:oneData.price,
+            discount:oneData.discount,
+            isAction:oneData.isAction,
+            categoryId:11,
+            subcategoryId:25,
+            price_old:null
+        }
+        const date = new Date()
+
+        req.body.is_new_expire = date.getTime()
+        if (Number(req.body.discount) > 0) {
+            obj.price_old = req.body.price;
+            obj.price =(req.body.price / 100) *(100 - oneData.discount);
+        }
+        const newProduct = await Products.create(obj);
+        let stock_data = {}
+        if (oneData.quantity) {
+            stock_data.quantity = req.body.quantity
+            stock_data.productId = newProduct.id
+            await Stock.create(stock_data)
+        }
+    }
+    return res.send(data)
 })
 function getWhere({ max_price, min_price, sex,is_new }) {
     let where = []

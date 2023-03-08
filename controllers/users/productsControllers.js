@@ -296,6 +296,54 @@ exports.searchProducts = catchAsync(async(req, res, next) => {
 
     return res.status(200).send({ products, subcategories, seller });
 });
+exports.searchProductsMore = catchAsync(async(req, res, next) => {
+    const limit = req.query.limit || 20;
+    let { keyword, offset, sort } = req.query;
+    var order;
+    order=getOrder(req.query)
+    let keywordsArray = [];
+    keyword = keyword.toLowerCase();
+    keywordsArray.push('%' + keyword + '%');
+    keyword = '%' + capitalize(keyword) + '%';
+    keywordsArray.push(keyword);
+    let where = {
+        [Op.or]: [{
+                name_tm: {
+                    [Op.like]: {
+                        [Op.any]: keywordsArray,
+                    },
+                },
+            },
+            {
+                name_ru: {
+                    [Op.like]: {
+                        [Op.any]: keywordsArray,
+                    },
+                },
+
+            },
+        ],
+    }
+    let productss = await Products.findAll({
+        where,
+        order,
+        limit,
+        offset,
+        include:[
+            {
+                model:Images,
+                as:"images"
+            }
+        ]
+    });
+    products=await isLiked(productss,req)
+    const count=await Products.count({where})
+    const products={
+        data:productss,
+        count:count
+    }
+    return res.status(200).send({ products});
+});
 exports.discount = catchAsync(async(req, res, next) => {
     const limit = req.query.limit || 20;
     const offset = req.query.offset || 0;

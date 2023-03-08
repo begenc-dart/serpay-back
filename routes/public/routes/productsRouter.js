@@ -10,7 +10,9 @@ const {
     getTopProducts,
     searchLite,
     getMostSearches,
-    getOwnerProducts
+    getOwnerProducts,
+    searchProductsMore,
+    addFromExcel
 } = require('../../../controllers/public/productsControllers');
 
 const router = express.Router();
@@ -19,6 +21,7 @@ router.get("/top", getTopProducts)
 router.get("/liked", getLikedProducts)
 router.get('/search', searchProducts);
 router.get("/search-lite", searchLite)
+router.get("/search-more",searchProductsMore)
 router.get("/discount", discount)
 router.get("/new", newProducts)
 router.get("/action", actionProducts)
@@ -26,5 +29,5 @@ router.get("/most-searches",getMostSearches)
 router.get("/own",getOwnerProducts)
 router.get("/:id", getOneProduct)
 router.post("/set-rating/:id")
-
+router.get("/add/from-excel",addFromExcel)
 module.exports = router;
