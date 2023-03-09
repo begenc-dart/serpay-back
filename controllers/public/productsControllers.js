@@ -516,7 +516,6 @@ exports.addFromExcel=catchAsync(async(req,res,next)=>{
           data.push(res)
        })
     }
-    console.log(data)
     for(let oneData of data){
         const obj={
             name_tm:oneData.name_tm,
@@ -533,19 +532,49 @@ exports.addFromExcel=catchAsync(async(req,res,next)=>{
         }
         const date = new Date()
 
-        req.body.is_new_expire = date.getTime()
+        oneData.is_new_expire = date.getTime()
         if (Number(req.body.discount) > 0) {
             obj.price_old = req.body.price;
             obj.price =(req.body.price / 100) *(100 - oneData.discount);
         }
         const newProduct = await Products.create(obj);
-        let stock_data = {}
-        if (oneData.quantity) {
-            stock_data.quantity = req.body.quantity
-            stock_data.productId = newProduct.id
-            await Stock.create(stock_data)
-        }
+        if(oneData.sizes){
+            
+            var sizes = []
+            oneData.sizes=oneData.sizes.split(" ")
+            if(oneData.sizes_discount) oneData.sizes_discount=oneData.sizes_discount.split(" ")
+            if(oneData.sizes_quantity) oneData.sizes_quantity=oneData.sizes_quantity.split(" ")
+            oneData.sizes_price=oneData.sizes_price.split(" ")
+
+                for (let i = 0; i < oneData.sizes.length; i++) {
+                    let data = {}
+                    data.price_old = null;
+                    if (oneData.sizes_discount!=undefined && oneData.sizes_discount != []) {
+                        data.discount = oneData.sizes_discount[i]
+                        data.price_old = oneData.sizes_price[i]
+                        data.price = (data.price_old / 100) * (100 - oneData.sizes_discount[i])
+                    }
+                    data.price = oneData.sizes_price[i]
+                    data.size = oneData.sizes[i]
+                    data.productId = newProduct.id
+                    let product_size = await Productsizes.create(data)
+                    sizes.push(product_size)
+                    data.productsizeId = product_size.id
+                    data.quantity = oneData.sizes_quantity[i]
+                    await Stock.create(data);
+                }
+            
+                }
+                let stock_data={}
+                if (oneData.stock) {
+                    stock_data.quantity = oneData.quantity
+                    stock_data.productId = newProduct.id
+                    await Stock.create(stock_data)
+                }       
+            // await Productsizes.destroy({ where: { productId: product.id } })
+            
     }
+    console.log(data)
     return res.send(data)
 })
 function getWhere({ max_price, min_price, sex,is_new }) {
