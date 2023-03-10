@@ -2,6 +2,10 @@ const Op = require('sequelize').Op;
 const AppError = require('../../utils/appError');
 const catchAsync = require('../../utils/catchAsync');
 const reader=require('xlsx');
+var AdmZip = require("adm-zip");
+const fs=require("fs")
+const {v4}=require("uuid")
+const sharp=require("sharp")
 const {
     Products,
     Categories,
@@ -160,6 +164,20 @@ exports.uploadExcel=catchAsync(async(req,res,next)=>{
     })
     return res.status(201).send("Sucess");
 })
+exports.uploadZip=catchAsync(async(req,res,next)=>{
+    req.files = Object.values(req.files)
+    const image = `${req.seller.id}_images.zip`;
+    const photo = req.files[0].data
+    if (!fs.existsSync(`./seller_images/${req.seller.id}`)){
+        fs.mkdirSync(`./seller_images/${req.seller.id}`)
+    }
+    fs.writeFileSync(`./seller_images/${req.seller.id}/${req.seller.id}_images.zip`, photo);
+    console.log(`./seller_images/${req.seller.id}/${req.seller.id}_images.zip`)
+    var zip = new AdmZip(`./seller_images/${req.seller.id}/${req.seller.id}_images.zip`);
+    zip.extractAllTo(/*target path*/ `./seller_images/${req.seller.id}/`, /*overwrite*/ true);
+
+    return res.status(201).send("Sucess");
+})
 exports.addFromExcel=catchAsync(async(req,res,next)=>{
     const filename="./static/"+req.seller.seller_id+"_products.xlsx"
     const file = reader.readFile(filename)
@@ -232,9 +250,17 @@ exports.addFromExcel=catchAsync(async(req,res,next)=>{
                     stock_data.quantity = oneData.quantity
                     stock_data.productId = newProduct.id
                     await Stock.create(stock_data)
-                }       
-            // await Productsizes.destroy({ where: { productId: product.id } })
-            
+                }           
+                const imagesArray=oneData.image.split(",")
+                for (const images of imagesArray) {
+                    console.log(images,256)
+                    const image_id = v4()
+                    const image = `static/${image_id}_product.webp`;
+                    const photo = `seller_images/${req.seller.id}/${images}`
+                    let buffer = await sharp(photo).resize(1080,720).webp().toBuffer()
+                    await sharp(buffer).toFile(image);
+                    let newImage = await Images.create({ image, image_id, productId: newProduct.id })
+                }
     }
     return res.send(data)
 })
