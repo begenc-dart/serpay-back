@@ -1,9 +1,9 @@
-const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const AppError = require('../../utils/appError');
 const catchAsync = require('../../utils/catchAsync');
 const { Seller, Products, Productsizes, Productcolor, Images,Stock,Orderproducts } = require('../../models');
 const {Op}=require("sequelize")
+const fs=require("fs")
 exports.addSeller = catchAsync(async(req, res, next) => {
     let { password } = req.body
     req.body.password = await bcrypt.hash(password, 10)
@@ -114,32 +114,19 @@ exports.deleteSeller = catchAsync(async(req, res, next) => {
             ]
         });
         if (!product) return next(new AppError("Product with that id not found", 404))
-        if (product.product_colors) {
-            for (const color of product.product_colors) {
-                let product_color = await Productcolor.findOne({ where: { id: color.id } })
-                await product_color.destroy()
-            }
-        }
-        if (product.product_sizes) {
-            for (const size of product.product_sizes) {
-                let product_size = await Productsizes.findOne({ where: { id: size.id } })
-                await product_size.destroy()
-            }
-        }
+        if (product.product_colors)  await Productcolor.destroy({ where: { productId: product.id } })
+        if (product.product_sizes) await Productsizes.destroy({ where: { productId: product.id } })
         if (!product)
             return next(new AppError('Product did not found with that ID', 404));
 
         const images = await Images.findAll({ where: { productId: product.id } })
         for (const image of images) {
             fs.unlink(`static/${image.image}`, function(err) {
-                if (err) throw err;
+                if (err) console.log(err);
             })
-            await image.destroy()
         }
-        const stocks = await Stock.findAll({ where: { productId: [product.id] } });
-        for (const stock of stocks) {
-            await stock.destroy()
-        }
+        await Images.destroy({where: { productId: product.id}})
+        await Stock.destroy({ where: { productId: [product.id] } });
         await product.destroy();
     }
     await seller.destroy()

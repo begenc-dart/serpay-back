@@ -1,21 +1,16 @@
-const fs = require('fs');
-const sharp = require('sharp');
-const { v4 } = require("uuid")
 const Op = require('sequelize').Op;
 const AppError = require('../../utils/appError');
 const catchAsync = require('../../utils/catchAsync');
-const { getDate } = require("../../utils/date")
+const reader=require('xlsx');
 const {
     Products,
     Categories,
     Subcategories,
     Stock,
-    Currency,
     Brands,
     Images,
     Productsizes,
     Productcolor,
-    Colors,
     Details
 } = require('../../models');
 const capitalize = function(string) {
@@ -155,4 +150,91 @@ exports.addProduct = catchAsync(async(req, res, next) => {
         await Stock.create(stock_data)
     }
     return res.status(201).send(newProduct)
+})
+exports.uploadExcel=catchAsync(async(req,res,next)=>{
+    req.files = Object.values(req.files)
+    const image = `${req.seller.seller_id}_products.xlsx`;
+    const photo = req.files[0]
+    photo.mv(`./static/${image}`,(err)=>{
+        if(err) return next(new AppError("Somethin went wrong",500))
+    })
+    return res.status(201).send("Sucess");
+})
+exports.addFromExcel=catchAsync(async(req,res,next)=>{
+    const filename="./static/"+req.seller.seller_id+"_products.xlsx"
+    const file = reader.readFile(filename)
+      
+    let data = []
+      
+    const sheets = file.SheetNames
+      
+    for(let i = 0; i < sheets.length; i++)
+    {
+       const temp = reader.utils.sheet_to_json(
+            file.Sheets[file.SheetNames[i]])
+       temp.forEach((res) => {
+          data.push(res)
+       })
+    }
+    for(let oneData of data){
+        const obj={
+            name_tm:oneData.name_tm,
+            name_ru:oneData.name_ru,
+            body_ru:oneData.body_ru,
+            body_tm:oneData.body_tm,
+            product_code:oneData.product_code,
+            price:oneData.price,
+            discount:oneData.discount,
+            isAction:oneData.isAction,
+            categoryId:11,
+            subcategoryId:25,
+            price_old:null,
+            sellerId:req.seller.id
+        }
+        const date = new Date()
+
+        oneData.is_new_expire = date.getTime()
+        if (Number(req.body.discount) > 0) {
+            obj.price_old = req.body.price;
+            obj.price =(req.body.price / 100) *(100 - oneData.discount);
+        }
+        console.log(obj)
+        const newProduct = await Products.create(obj);
+        if(oneData.sizes){
+            
+            var sizes = []
+            oneData.sizes=oneData.sizes.split(" ")
+            if(oneData.sizes_discount) oneData.sizes_discount=oneData.sizes_discount.split(" ")
+            if(oneData.sizes_quantity) oneData.sizes_quantity=oneData.sizes_quantity.split(" ")
+            oneData.sizes_price=oneData.sizes_price.split(" ")
+
+                for (let i = 0; i < oneData.sizes.length; i++) {
+                    let data = {}
+                    data.price_old = null;
+                    if (oneData.sizes_discount!=undefined && oneData.sizes_discount != []) {
+                        data.discount = oneData.sizes_discount[i]
+                        data.price_old = oneData.sizes_price[i]
+                        data.price = (data.price_old / 100) * (100 - oneData.sizes_discount[i])
+                    }
+                    data.price = oneData.sizes_price[i]
+                    data.size = oneData.sizes[i]
+                    data.productId = newProduct.id
+                    let product_size = await Productsizes.create(data)
+                    sizes.push(product_size)
+                    data.productsizeId = product_size.id
+                    data.quantity = oneData.sizes_quantity[i]
+                    await Stock.create(data);
+                }
+            
+                }
+                let stock_data={}
+                if (oneData.stock) {
+                    stock_data.quantity = oneData.quantity
+                    stock_data.productId = newProduct.id
+                    await Stock.create(stock_data)
+                }       
+            // await Productsizes.destroy({ where: { productId: product.id } })
+            
+    }
+    return res.send(data)
 })

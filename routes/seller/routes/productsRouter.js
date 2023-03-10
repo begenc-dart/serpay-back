@@ -3,6 +3,8 @@ const {
     addProduct,
     getAllActiveProducts,
     getOneProduct,
+    uploadExcel,
+    addFromExcel,
 } = require('../../../controllers/seller/productsControllers');
 const {
     editProduct,
@@ -37,6 +39,8 @@ router.post('/delete/:id', deleteProduct);
 router.post('/upload-image/:id', uploadProductImage);
 router.post("/upload-image/by-color/:id", uploadProductImagebyColor)
 router.post("/upload-details/:id", uploadDetails)
+router.post("/upload-excel",uploadExcel)
+router.post("/upload-from-excel",addFromExcel)
 router.post("/discount",setDiscount)
 router.post("/delete/image/:id", deleteProductImage)
 router.post("/delete/detail/:id", deleteDetailImage)

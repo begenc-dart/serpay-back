@@ -29,5 +29,4 @@ router.get("/most-searches",getMostSearches)
 router.get("/own",getOwnerProducts)
 router.get("/:id", getOneProduct)
 router.post("/set-rating/:id")
-router.get("/add/from-excel",addFromExcel)
 module.exports = router;

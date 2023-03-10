@@ -506,7 +506,7 @@ exports.deleteProductImage = catchAsync(async(req, res, next) => {
     const image = await Images.findOne({ where: { image_id: req.params.id } })
 
     fs.unlink(`static/${image.image}`, function(err) {
-        if (err) throw err;
+        if (err) console.log(err);
     })
     await image.destroy()
     return res.status(200).send({ msg: "Sucess" })
