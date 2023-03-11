@@ -255,10 +255,10 @@ exports.addFromExcel=catchAsync(async(req,res,next)=>{
                 for (const images of imagesArray) {
                     console.log(images,256)
                     const image_id = v4()
-                    const image = `static/${image_id}_product.webp`;
+                    const image = `${image_id}_product.webp`;
                     const photo = `seller_images/${req.seller.id}/${images}`
                     let buffer = await sharp(photo).resize(1080,720).webp().toBuffer()
-                    await sharp(buffer).toFile(image);
+                    await sharp(buffer).toFile(`static/${image}`);
                     let newImage = await Images.create({ image, image_id, productId: newProduct.id })
                 }
     }
