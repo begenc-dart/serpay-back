@@ -533,7 +533,7 @@ exports.setDiscount=catchAsync(async(req,res,next)=>{
     const products=await Products.findAll({where:{sellerId:req.seller.id}})
     for (const product of products){
         if(discount>0){
-            if(product.price_old>0) product.price=product.price_old
+            if(product.price_old>0 && product.price_old!=null) product.price=product.price_old
             await Products.update({
                 price_old:product.price,price:(product.price/100)*(100-req.body.discount),discount:req.body.discount},
                 {where:{id:product.id}}) 
@@ -547,7 +547,7 @@ exports.setDiscount=catchAsync(async(req,res,next)=>{
         const product_size=await Productsizes.findAll({where:{productId:product.id}})
         for(const size of product_size){
             if(discount>0){
-                if(size.price_old>0) size.price=size.price_old
+                if(size.price_old>0 &&size.price_old!=null) size.price=size.price_old
                 await Productsizes.update({
                     price_old:size.price,price:(size.price/100)*(100-req.body.discount),discount:req.body.discount},
                     {where:{id:size.id}}) 
