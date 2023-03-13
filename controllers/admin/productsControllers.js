@@ -431,7 +431,7 @@ exports.deleteProduct = catchAsync(async(req, res, next) => {
     return res.status(200).send('Successfully Deleted');
 });
 exports.deleteProductColor = catchAsync(async(req, res, next) => {
-    const product_color = await Productcolor.findOne({ productcolor_id: req.params.id })
+    const product_color = await Productcolor.findOne({where:{ product_color_id: req.params.id }})
     if (!product_color) return next(new AppError("Product color not found with that id", 404))
     await Productsizes.destroy({ where: { productColorId: product_color.id } })
     await Images.destroy({ where: { productcolorId: product_color.id } })

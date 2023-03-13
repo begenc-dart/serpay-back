@@ -94,6 +94,7 @@ exports.oneSeller = catchAsync(async(req, res, next) => {
         ],
     }],
 })
+    if(!seller) return next(new AppError("Seller not found",404))
     const count=await Products.count({where: {sellerId:seller.id}})
     return res.send({seller,count})
 })
@@ -139,7 +140,6 @@ exports.getAccount=catchAsync(async(req,res,next)=>{
 if (startTime) {
     let firstDate = new Date(startTime)
     let secondDate = new Date(endTime)
-    let where={}
     where.createdAt = {
         [Op.gte]: firstDate,
         [Op.lte]: secondDate

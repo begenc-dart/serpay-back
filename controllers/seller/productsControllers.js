@@ -178,6 +178,20 @@ exports.uploadZip=catchAsync(async(req,res,next)=>{
 
     return res.status(201).send("Sucess");
 })
+exports.uploadZipDetails=catchAsync(async(req,res,next)=>{
+    req.files = Object.values(req.files)
+    const image = `${req.seller.id}_details.zip`;
+    const photo = req.files[0].data
+    if (!fs.existsSync(`./seller_details/${req.seller.id}`)){
+        fs.mkdirSync(`./seller_details/${req.seller.id}`)
+    }
+    fs.writeFileSync(`./seller_details/${req.seller.id}/${req.seller.id}_images.zip`, photo);
+    console.log(`./seller_details/${req.seller.id}/${req.seller.id}_images.zip`)
+    var zip = new AdmZip(`./seller_details/${req.seller.id}/${req.seller.id}_images.zip`);
+    zip.extractAllTo(/*target path*/ `./seller_details/${req.seller.id}/`, /*overwrite*/ true);
+
+    return res.status(201).send("Sucess");
+})
 exports.addFromExcel=catchAsync(async(req,res,next)=>{
     const filename="./static/"+req.seller.seller_id+"_products.xlsx"
     const file = reader.readFile(filename)

@@ -137,7 +137,7 @@ exports.getTime = catchAsync(async(req, res, next) => {
 })
 exports.getStats=catchAsync(async(req, res, next) => {
     const user_count=await Users.count()
-    const discount_count=await Products.count({where:{discount:{[Op.not]:null}}})
+    const discount_count=await Products.count({where:{discount:{[Op.not]:0}}})
     const product_count=await Products.count()
     const order_count=await Orders.count()
     return res.send({user_count,discount_count,product_count,order_count})

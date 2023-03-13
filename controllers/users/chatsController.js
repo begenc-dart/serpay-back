@@ -88,6 +88,7 @@ exports.getOneChat = catchAsync(async(req, res, next) => {
     for (let i = 0; i < chats.length; i++) {
         if (chats[i].user_id1 == req.user.user_id) chats[i].isYou = true
     }
+    console.log(chats)
     return res.status(200).send(chats.reverse())
 })
 exports.deleteFriendChat = catchAsync(async(req,res,next)=>{

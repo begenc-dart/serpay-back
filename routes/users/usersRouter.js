@@ -13,6 +13,7 @@ const {
     getMe,
     updateMyPassword,
     updateMe,
+    updateMeAdmin,
     deleteMe,
     getAllHistory,
     addMyHistory,
@@ -37,6 +38,7 @@ router.get("/get-me", protect, getMe)
 router.post('/login', login);
 router.get('/my-account', protect, getMe);
 router.patch('/update-me', protect, updateMe);
+router.patch("/update-me/admin",protect,updateMeAdmin)
 router.post('/delete-me', protect, deleteMe);
 router.post("/upload-image", protect, uploadUserImage)
 router.patch('/update-my-password', protect, updateMyPassword);

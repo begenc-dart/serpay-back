@@ -48,6 +48,7 @@ exports.updateMe = catchAsync(async(req, res, next) => {
     if (has_username) {
         if (has_username.user_id != req.user.user_id) return next(new AppError("This nickname is already taken"))
     }
+
     await user.update({
         username,
         nickname
@@ -55,6 +56,24 @@ exports.updateMe = catchAsync(async(req, res, next) => {
     createSendToken(user, 200, res);
 });
 
+exports.updateMeAdmin = catchAsync(async(req, res, next) => {
+    let {  username,password,newPassword,newPasswordConfirm } = req.body;
+    if (!username || !password)
+        return next(new AppError('Invalid credentials', 400));
+
+    const user = await Users.findOne({ where: { user_id: [req.user.user_id] } });
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+        return next(new AppError('Incorrect username or password', 401));
+    }
+    if(newPassword!=newPasswordConfirm) return next (new AppError("Incorrect username or password",401))
+    password = await bcrypt.hash(newPassword, 12);
+    await user.update({
+        username,
+        password
+        
+    });
+    createSendToken(user, 200, res);
+});
 exports.deleteMe = catchAsync(async(req, res, next) => {
     if (req.body.user_phone != req.user.user_phone) {
         return next(new AppError('Phone number is not correct', 400));
