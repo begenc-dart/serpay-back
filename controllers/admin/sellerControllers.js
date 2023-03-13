@@ -65,12 +65,12 @@ exports.oneSeller = catchAsync(async(req, res, next) => {
     let seller_id = req.params.id
     const limit=req.query.limit ||20
     const offset=req.query.offset ||0
+    console.log("one seller")
     let seller = await Seller.findOne({
         where: { seller_id },
         include: [{
             model: Products,
             as: "products",
-            separate:true,
             order: [
                 ['id', 'DESC'],
                 // ["images", "id", "DESC"]
@@ -80,7 +80,7 @@ exports.oneSeller = catchAsync(async(req, res, next) => {
             include: [{
                 model: Images,
                 as: "images",
-                limit: 4
+                limit: 1
             },
             {
                 model: Productcolor,
@@ -89,11 +89,13 @@ exports.oneSeller = catchAsync(async(req, res, next) => {
             },
             {
                 model: Productsizes,
-                as: "product_sizes"
+                as: "product_sizes",
+                limit:1
             }
         ],
     }],
 })
+    console.log(seller.products.length)
     if(!seller) return next(new AppError("Seller not found",404))
     const count=await Products.count({where: {sellerId:seller.id}})
     return res.send({seller,count})

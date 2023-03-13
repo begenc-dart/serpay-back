@@ -259,6 +259,7 @@ exports.searchProducts = catchAsync(async(req, res, next) => {
 
             },
         ],
+        isActive:true
     }
     const productss = await Products.findAll({
         where,
@@ -323,6 +324,7 @@ exports.searchProductsMore = catchAsync(async(req, res, next) => {
 
             },
         ],
+        isActive:true
     }
     let productss = await Products.findAll({
         where,

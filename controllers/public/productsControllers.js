@@ -19,9 +19,9 @@ const {isUUID}=require("validator")
 exports.getProducts = catchAsync(async(req, res) => {
     const limit = req.query.limit || 10;
     const { offset } = req.query;
-    var order, where;
     const products = await Products.findAll({
         order:[["createdAt","DESC"]],
+        where:{isActive:true},
         limit,
         offset,
         include: [{
@@ -165,6 +165,7 @@ exports.searchProducts = catchAsync(async(req, res, next) => {
 
             },
         ],
+        isActive:true
     }
     const productss = await Products.findAll({
         where,
@@ -229,6 +230,7 @@ exports.searchProductsMore = catchAsync(async(req, res, next) => {
 
             },
         ],
+        isActive:true
     }
     const productss = await Products.findAll({
         where,
