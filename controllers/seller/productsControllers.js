@@ -230,7 +230,6 @@ exports.addFromExcel=catchAsync(async(req,res,next)=>{
             obj.price_old = req.body.price;
             obj.price =(req.body.price / 100) *(100 - oneData.discount);
         }
-        console.log(obj)
         const newProduct = await Products.create(obj);
         if(oneData.sizes){
             
@@ -274,6 +273,17 @@ exports.addFromExcel=catchAsync(async(req,res,next)=>{
                     let buffer = await sharp(photo).resize(1080,720).webp().toBuffer()
                     await sharp(buffer).toFile(`static/${image}`);
                     let newImage = await Images.create({ image, image_id, productId: newProduct.id })
+                }
+                if(oneData.details){
+                    const imagesArray=oneData.details.split(",")
+                    for (const images of imagesArray) {
+                        const detail_id = v4()
+                        const image = `${detail_id}_detail.webp`;
+                        const photo = `seller_images/${req.seller.id}/${images}`
+                        let buffer = await sharp(photo).resize(1080,720).webp().toBuffer()
+                        await sharp(buffer).toFile(`static/${image}`);
+                        let newImage = await Details.create({ image, detail_id, productId: newProduct.id })
+                    }
                 }
     }
     return res.send(data)

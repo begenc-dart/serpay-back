@@ -6,6 +6,7 @@ const {
     uploadExcel,
     addFromExcel,
     uploadZip,
+    uploadZipDetails,
 } = require('../../../controllers/seller/productsControllers');
 const {
     editProduct,
@@ -42,6 +43,7 @@ router.post("/upload-image/by-color/:id", uploadProductImagebyColor)
 router.post("/upload-details/:id", uploadDetails)
 router.post("/upload-excel",uploadExcel)
 router.post("/upload-zip",uploadZip)
+router.post("/upload-details",uploadZipDetails)
 router.post("/upload-from-excel",addFromExcel)
 router.post("/discount",setDiscount)
 router.post("/delete/image/:id", deleteProductImage)

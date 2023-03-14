@@ -89,7 +89,10 @@ exports.addMyHistory = catchAsync(async(req, res, next) => {
     const product = await Products.findOne({ where: { product_id: req.body.product_id } })
     req.body.productId = product.id
     let address=await Userhistory.findOne({where: { userId:req.user.id,productId:product.id}})
-    if(address) await address.update({updatedAt:new Date()})
+    if(address!=null) {
+        await address.update({isSelected:true})
+        await address.update({isSelected:false})
+    }
     else address = await Userhistory.create(req.body)
     return res.status(201).send(address)
 })
