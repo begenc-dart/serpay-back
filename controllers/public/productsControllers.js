@@ -28,7 +28,6 @@ exports.getProducts = catchAsync(async(req, res) => {
             model: Images,
             as: "images"
         }, ],
-        where:{isActive:true}
     });
     return res.status(200).json(products);
 });

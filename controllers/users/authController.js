@@ -16,13 +16,13 @@ exports.verify_code = catchAsync(async(req, res, next) => {
             return next(new AppError('This number has already signed as user', 400));
         }
         const generated_code = randomstring.generate({
-            length: 6,
+            length: 4,
             charset: "123456789"
         })
         const obj = {
             code: generated_code,
             number: user_phone,
-            sms: 'Serpay tassyklaýyş koduňyz: ',
+            sms: 'PandaTM tassyklaýyş koduňyz: ',
         };
         var io = req.app.get('socketio');
         console.log(obj)
@@ -44,14 +44,14 @@ exports.verify_code_forgotten = catchAsync(async(req, res, next) => {
         }
 
         const generated_code = randomstring.generate({
-            length: 6,
+            length: 4,
             charset: "123456789"
         })
 
         const obj = {
             code: generated_code,
             number: user_phone,
-            sms: 'Serpay tassyklaýyş koduňyz: ' + generated_code,
+            sms: 'PandaTM tassyklaýyş koduňyz: ' ,
 
         }
         var io = req.app.get('socketio');
