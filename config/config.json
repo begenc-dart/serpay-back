@@ -7,8 +7,7 @@
         "dialect": "postgres",
         "dialectOptions": {
             "useUTC": false
-        },
-        "timezone": "+05:00"
+        }
     },
     "test": {
         "username": "root",

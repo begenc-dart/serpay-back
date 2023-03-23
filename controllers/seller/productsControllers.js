@@ -218,10 +218,11 @@ exports.addFromExcel=catchAsync(async(req,res,next)=>{
             price:oneData.price,
             discount:oneData.discount,
             isAction:oneData.isAction,
-            categoryId:11,
-            subcategoryId:25,
+            categoryId:oneData.categoryId,
+            subcategoryId:oneData.subcategoryId,
             price_old:null,
-            sellerId:req.seller.id
+            sellerId:req.seller.id,
+            isActive:false
         }
         const date = new Date()
 
@@ -265,6 +266,7 @@ exports.addFromExcel=catchAsync(async(req,res,next)=>{
                     await Stock.create(stock_data)
                 }           
                 const imagesArray=oneData.image.split(",")
+                imagesArray.reverse()
                 for (const images of imagesArray) {
                     console.log(images,256)
                     const image_id = v4()

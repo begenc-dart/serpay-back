@@ -1,8 +1,8 @@
- const { Products } = require("../models")
+ const { Products,Users } = require("../models")
 const { Op } = require("sequelize")
 const schedule = require("node-schedule")
 const fs = require("fs")
-const dates = schedule.scheduleJob('0 45 15 * * *', async function() {
+const dates = schedule.scheduleJob('0 0 0 * * *', async function() {
     var expiration_days = fs.readFileSync('./config/expire_time.txt', 'utf8')
     let today = new Date().getTime()
     let expiration_time_ms = Number(expiration_days) * 86400 * 1000
@@ -19,5 +19,9 @@ const dates = schedule.scheduleJob('0 45 15 * * *', async function() {
         product.update({ isNew: false })
         console.log(`Product with id: ${product.product_id} is not new product now`)
     }
+});
+const isParticipating = schedule.scheduleJob('0 0 0 * * 1', async function() {
+    await Users.update({isParticipating:false},{where:{isParticipating:true}})
+    console.log("users are not participating")
 });
 module.exports = () => { dates }
