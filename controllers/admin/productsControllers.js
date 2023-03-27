@@ -561,6 +561,16 @@ exports.setDiscount=catchAsync(async(req,res,next)=>{
     }
     return res.status(200).send("Sucess")
 })
+exports.setExpireTime=catchAsync(async(req,res,next)=>{
+        let today = new Date().getTime()
+        let new_expiration_time_ms = Number(10) * 86400 * 1000
+        let expiration_time = today - new_expiration_time_ms
+        console.timeLog(expiration_time)
+        var products = await Products.update({isNew:true,is_new_expire:expiration_time},{where: {
+            is_new_expire:null
+        },})
+        return res.status(200).send({ msg: "Sucess" })
+})
 const intoArray = (file) => {
     if (file[0].length == undefined) return file
     else return file[0]

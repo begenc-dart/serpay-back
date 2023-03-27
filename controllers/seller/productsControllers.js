@@ -208,6 +208,7 @@ exports.addFromExcel=catchAsync(async(req,res,next)=>{
           data.push(res)
        })
     }
+    const date=new Date()
     for(let oneData of data){
         const obj={
             name_tm:oneData.name_tm,
@@ -222,7 +223,9 @@ exports.addFromExcel=catchAsync(async(req,res,next)=>{
             subcategoryId:oneData.subcategoryId,
             price_old:null,
             sellerId:req.seller.id,
-            isActive:false
+            isActive:false,
+            is_new_expire :date.getTime()
+
         }
         const date = new Date()
 

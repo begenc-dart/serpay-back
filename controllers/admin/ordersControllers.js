@@ -67,7 +67,7 @@ exports.getOrderProducts = catchAsync(async(req, res, next) => {
     const offset = req.query.offset;
     const order = await Orders.findOne({
         where: { order_id: req.params.id },
-        include: {
+        include:[ {
             model: Orderproducts,
             as: 'order_products',
             order: [
@@ -76,6 +76,10 @@ exports.getOrderProducts = catchAsync(async(req, res, next) => {
             limit,
             offset,
         },
+        {
+            model:Seller,
+            as:"seller"
+        }],
     });
 
     if (!order)
@@ -90,9 +94,7 @@ exports.getOrderProducts = catchAsync(async(req, res, next) => {
             });
 
             if (!product)
-                return next(
-                    new AppError(`Product did not found with your ID : ${i} `, 404)
-                );
+                continue;
 
             const {
                 product_id,

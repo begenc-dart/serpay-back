@@ -64,7 +64,7 @@ exports.getCategoryProducts = catchAsync(async(req, res, next) => {
     if (!category)
     return next(new AppError('Category did not found with that ID', 404));
     
-    const { sort, isAction } = req.query
+    const { sort, isAction,discount } = req.query
     let order, where = {}
     if (sort == 1) {
         order = [
@@ -82,10 +82,12 @@ exports.getCategoryProducts = catchAsync(async(req, res, next) => {
             ['updatedAt', 'DESC']
         ];
         where = getWhere(req.query)
-        let discount = {
-            [Op.ne]: 0,
+        if (discount && discount != "false") {
+            let discount = {
+                [Op.ne]: 0
+            }
+            where.push({ discount })
         }
-        where.push({ discount })
         if (isAction) where.push({ isAction })
         where.push({ categoryId:category.id })
     const products = await Products.findAll({

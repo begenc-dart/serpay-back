@@ -98,22 +98,18 @@ exports.changeTime = catchAsync(async(req, res, next) => {
     let today = new Date().getTime()
     let new_expiration_time_ms = Number(newExpirationDay) * 86400 * 1000
     if (newExpirationDay > Number(expiration_days)) {
+        console.log("101")
         let expiration_time = today - new_expiration_time_ms
-        var products = await Products.findAll({
-            where: {
-                is_new_expire: {
-                    [Op.gt]: expiration_time
-                },
-                isNew: false
+        var products = await Products.update({isNew:true},{where: {
+            is_new_expire: {
+                [Op.gt]: expiration_time
             },
-        })
-        for (const product of products) {
-            await product.update({ isNew: true })
-            console.log(`Product with id: ${product.product_id} is  new product now`)
-        }
+            isNew: false
+        },})
+
     } else {
         let expiration_time = today - new_expiration_time_ms
-        var products = await Products.findAll({
+        var products = await Products.update({isNew:false},{
             where: {
                 is_new_expire: {
                     [Op.lt]: expiration_time
@@ -121,12 +117,6 @@ exports.changeTime = catchAsync(async(req, res, next) => {
                 isNew: true
             },
         })
-        for (const product of products) {
-            await product.update({
-                isNew: false
-            })
-            console.log(`Product with id: ${product.product_id} is not new product now`)
-        }
     }
     fs.writeFileSync("config/expire_time.txt", newExpirationDay.toString())
     return res.status(200).send({ msg: "Sucess" })

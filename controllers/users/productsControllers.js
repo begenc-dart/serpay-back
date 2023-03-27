@@ -488,15 +488,13 @@ exports.getCategoryProducts = catchAsync(async(req, res, next) => {
 
     const limit = req.query.limit || 20;
     const offset = req.query.offset;
-    const sort = req.query.sort;
-
     var order,where=[];
     order=getOrder(req.query)
     where=getWhere(req.query)
     where.push({categoryId:category.id})
     order.push(["images", "id", "DESC"])
     let products = await Products.findAll({
-        where: { categoryId: category.id }, //isActive goy sonundan
+        where,//isActive goy sonundan
         order,
         limit,
         offset,
