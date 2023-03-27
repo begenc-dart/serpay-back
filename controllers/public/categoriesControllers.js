@@ -100,6 +100,7 @@ exports.getCategoryProducts = catchAsync(async(req, res, next) => {
             as: "images"
         }]
     });
+    console.log(104,products.length)
     const count = await Products.count({ where})
     return res.status(200).send({ products, count });
 });

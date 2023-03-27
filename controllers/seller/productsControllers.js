@@ -210,6 +210,7 @@ exports.addFromExcel=catchAsync(async(req,res,next)=>{
     }
     const date=new Date()
     for(let oneData of data){
+        console.log(oneData)
         const obj={
             name_tm:oneData.name_tm,
             name_ru:oneData.name_ru,
@@ -227,9 +228,6 @@ exports.addFromExcel=catchAsync(async(req,res,next)=>{
             is_new_expire :date.getTime()
 
         }
-        const date = new Date()
-
-        oneData.is_new_expire = date.getTime()
         if (Number(req.body.discount) > 0) {
             obj.price_old = req.body.price;
             obj.price =(req.body.price / 100) *(100 - oneData.discount);
