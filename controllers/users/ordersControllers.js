@@ -281,6 +281,7 @@ exports.getNotOrderedProducts = catchAsync(async(req, res, next) => {
     const checked_products = []
 
     for (var i = 0; i < order_products.length; i++) {
+        var product_size
         const product = await Products.findOne({
             where: { product_id: order_products[i].product_id },
             include:[{
@@ -328,7 +329,7 @@ exports.getNotOrderedProducts = catchAsync(async(req, res, next) => {
             body_ru
         } = product;
         if (order_products[i].product_size_id != null) {
-            var product_size = await Productsizes.findOne({ where: { product_size_id: order_products[i].product_size_id } })
+            product_size = await Productsizes.findOne({ where: { product_size_id: order_products[i].product_size_id } })
         }
         // if (order_products[i].product_color_id != null) {
         //     var product_color = await Productcolor.findAll({ where: { product_color_id: order_products.product_color_id },
@@ -373,6 +374,7 @@ exports.getNotOrderedProducts = catchAsync(async(req, res, next) => {
             obj.stock=product.product_stock[0].quantity
         }
         checked_products.push(obj);
+        product_size=null
     }
     let new_array = []
     for (let i = 0; i < checked_products.length; i++) {

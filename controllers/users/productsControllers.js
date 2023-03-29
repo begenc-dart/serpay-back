@@ -170,6 +170,7 @@ exports.getTopProducts = catchAsync(async(req, res) => {
         }
         where.push({ discount })
     }
+    where.push({sold_count:{[Op.gt]:0}})
 
     if (isAction) where.push({ isAction })
     order.push(["sold_count", "DESC"])
