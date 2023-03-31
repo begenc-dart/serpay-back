@@ -100,7 +100,7 @@ exports.getTopProducts = catchAsync(async(req, res) => {
 exports.getLikedProducts = catchAsync(async(req, res) => {
     const limit = req.query.limit || 10;
     const offset = req.query.offset || 0;
-    const { sort, isAction, max_price, min_price, discount, sex,isNew } = req.query
+    const { isAction, discount } = req.query
     let order, where = []
 
     where=getWhere(req.query)
@@ -148,6 +148,7 @@ exports.searchProducts = catchAsync(async(req, res, next) => {
     keywordsArray.push('%' + keyword + '%');
     keyword = '%' + capitalize(keyword) + '%';
     keywordsArray.push(keyword);
+    
     let where = {
         [Op.or]: [{
                 name_tm: {

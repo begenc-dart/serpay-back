@@ -28,7 +28,11 @@ module.exports = (sequelize, DataTypes) => {
         nickname: DataTypes.STRING,
         address_tm: DataTypes.STRING,
         address_ru: DataTypes.STRING,
-        isActive: DataTypes.BOOLEAN
+        isActive: DataTypes.BOOLEAN,
+        sequence:{
+            type:DataTypes.INTEGER,
+            defaultValue:1
+        }
     }, {
         sequelize,
         tableName: "sellers",

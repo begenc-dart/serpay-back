@@ -267,7 +267,6 @@ exports.addFromExcel=catchAsync(async(req,res,next)=>{
                     await Stock.create(stock_data)
                 }           
                 const imagesArray=oneData.image.split(",")
-                imagesArray.reverse()
                 for (const images of imagesArray) {
                     console.log(images,256)
                     const image_id = v4()

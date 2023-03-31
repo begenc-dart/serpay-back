@@ -12,13 +12,13 @@ exports.addSeller = catchAsync(async(req, res, next) => {
     return res.send(seller)
 })
 exports.isActive = catchAsync(async(req, res, next) => {
-    let { isActive, seller_id } = req.body
+    let { isActive, seller_id,sequence } = req.body
     let seller = await Seller.findOne({ where: { seller_id } })
     console.log(req.body)
     if (!seller) {
         return next(new AppError("There is no seller with this id", 404))
     }
-    await seller.update({ isActive })
+    await seller.update({ isActive,sequence })
     return res.send(seller)
 })
 exports.allSellers = catchAsync(async(req, res, next) => {
