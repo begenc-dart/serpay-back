@@ -175,7 +175,7 @@ exports.getTopProducts = catchAsync(async(req, res) => {
     if (isAction) where.push({ isAction })
     order.push(["sold_count", "DESC"])
     let productss = await Products.findAll({
-        isActive: true,
+        where,
         limit,
         offset,
         order,
@@ -185,11 +185,11 @@ exports.getTopProducts = catchAsync(async(req, res) => {
         },
     });
     productss = await isLiked(productss, req)
+    const count=await Products.count({where:{sellerId:null}})
     const products={
         count,
         rows:productss
     }
-    const count=await Products.count({where:{sellerId:null}})
 
     return res.status(200).send(products);
 });
