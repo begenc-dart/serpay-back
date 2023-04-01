@@ -21,7 +21,7 @@ exports.getAll = catchAsync(async(req, res, next) => {
     }
     const sellers = await Seller.findAll({
         order: [
-            ["id", "DESC"]
+            ["sequence", "DESC"]
         ],
         limit,
         offset,
