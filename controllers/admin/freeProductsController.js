@@ -1,4 +1,4 @@
-const { Freeproducts, Images } = require("../../models")
+const { Freeproducts, Images,Sharingusers,Users } = require("../../models")
 const { Op } = require('sequelize');
 const AppError = require('../../utils/appError');
 const catchAsync = require('../../utils/catchAsync');
@@ -72,7 +72,14 @@ exports.deleteFreeProduct = catchAsync(async(req, res, next) => {
             if (err) throw new Error("image not found")
         })
     }
+    const sharing_users=await Sharingusers.findAll({where:{freeproductId:freeproduct.id}})
+    let array=[]
+    for (const sharing_user of sharing_users){
+        array.push(sharing_user.userId)
+    }
+    await Users.update({isParticipating:false},{where:{[Op.in]:array}})
     await freeproduct.destroy()
+
     return res.status(200).send({ msg: "Sucessfully deleted" })
 })
 
