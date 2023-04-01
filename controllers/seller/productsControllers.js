@@ -83,14 +83,21 @@ exports.getOneProduct = catchAsync(async(req, res, next) => {
                     },
                     {
                         model: Productsizes,
-                        as: "product_sizes"
-
+                        as: "product_sizes",
+                        include:{
+                            model:Stock,
+                            as:"product_size_stock"
+                        }
                     }
                 ]
             },
             {
                 model: Productsizes,
-                as: "product_sizes"
+                as: "product_sizes",
+                include:{
+                    model:Stock,
+                    as:"product_size_stock"
+                }
             },
             {
                 model: Details,
@@ -107,6 +114,10 @@ exports.getOneProduct = catchAsync(async(req, res, next) => {
             {
                 model: Subcategories,
                 as: "subcategory"
+            },
+            {
+                model:Stock,
+                as:"product_stock"
             }
         ]
     })

@@ -185,7 +185,7 @@ exports.getTopProducts = catchAsync(async(req, res) => {
         },
     });
     productss = await isLiked(productss, req)
-    const count=await Products.count({where:{sellerId:null}})
+    const count=await Products.count({where})
     const products={
         count,
         rows:productss
