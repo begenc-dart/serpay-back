@@ -273,7 +273,7 @@ exports.addFromExcel=catchAsync(async(req,res,next)=>{
                 }
                 let stock_data={}
                 if (oneData.stock) {
-                    stock_data.quantity = oneData.quantity
+                    stock_data.quantity = oneData.stock
                     stock_data.productId = newProduct.id
                     await Stock.create(stock_data)
                 }           

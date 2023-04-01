@@ -370,6 +370,11 @@ exports.editProduct = catchAsync(async(req, res, next) => {
         req.body.subcategoryId=subcategory.id
     }
     await product.update(req.body);
+    if (req.body.quantity) {
+        stock_data.quantity = req.body.quantity
+        stock_data.productId = product.id
+        await Stock.update({stock_data},{where:{productId:product.id,productsizeId:null}})
+    }
     return res.status(200).send(product);
 });
 exports.editProductStatus = catchAsync(async(req, res, next) => {
