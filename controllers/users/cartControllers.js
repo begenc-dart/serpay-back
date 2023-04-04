@@ -143,7 +143,7 @@ exports.isOrdered = catchAsync(async(req, res, next) => {
 exports.deleteProduct = catchAsync(async(req, res, next) => {
     const order_product = await Orderproducts.findOne({
         where: {
-            [Op.and]: [{ product_id: req.params.id, userId: req.user.id }]
+            [Op.and]: [{ orderproduct_id: req.params.id, userId: req.user.id }]
         }
     })
     if (!order_product) return next(new AppError("Order product with that id not found", 404))
