@@ -499,7 +499,7 @@ exports.uploadDetails = catchAsync(async(req, res, next) => {
         const detail_id = v4()
         const image = `${detail_id}_detail.webp`;
         const photo = images.data
-        let buffer = await sharp(photo).resize(1080,720).webp().toBuffer()
+        let buffer = await sharp(photo).webp().toBuffer()
 
         await sharp(buffer).toFile(`static/${image}`);
         let newImage = await Details.create({ image, detail_id, productId: product.id })
@@ -535,6 +535,7 @@ exports.setId = catchAsync(async(req, res, next) => {
     return res.send("sucess")
 })
 exports.setDiscount=catchAsync(async(req,res,next)=>{   
+    const {discount}=req.body
     const products=await Products.findAll({where:{sellerId:req.seller.id}})
     for (const product of products){
         if(discount>0){
