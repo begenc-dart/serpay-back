@@ -26,7 +26,6 @@ const {
     setDiscount
 } = require("../../../controllers/admin/productsControllers")
 const router = express.Router();
-
 router.get('/', getAllActiveProducts);
 router.get("/:product_id", getOneProduct)
 router.post("/add", addProduct)
