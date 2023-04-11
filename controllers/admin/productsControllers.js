@@ -371,6 +371,7 @@ exports.editProduct = catchAsync(async(req, res, next) => {
     }
     await product.update(req.body);
     if (req.body.quantity) {
+        let stock_data={}
         stock_data.quantity = req.body.quantity
         stock_data.productId = product.id
         await Stock.update({stock_data},{where:{productId:product.id,productsizeId:null}})
