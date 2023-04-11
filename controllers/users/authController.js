@@ -22,7 +22,7 @@ exports.verify_code = catchAsync(async(req, res, next) => {
         const obj = {
             code: generated_code,
             number: user_phone,
-            sms: 'PandaTM tassyklaýyş koduňyz: ',
+            sms: 'PandaTM tassyklaýyş koduňyz: '+code,
         };
         var io = req.app.get('socketio');
         console.log(obj)

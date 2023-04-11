@@ -241,7 +241,8 @@ exports.searchProducts = catchAsync(async(req, res, next) => {
     let keyword2=keyword
     keyword = keyword.toLowerCase();
     keywordsArray.push('%' + keyword + '%');
-    keyword = '%' + capitalize(keyword) + '%';
+    keywordsArray.push('%' + capitalize(keyword) + '%');
+    keywordsArray.push('%' + keyword.toUpperCase() + '%')
     keywordsArray.push(keyword);
     let where = {
         [Op.or]: [{

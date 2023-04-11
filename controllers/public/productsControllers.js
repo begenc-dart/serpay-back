@@ -146,7 +146,8 @@ exports.searchProducts = catchAsync(async(req, res, next) => {
     let keyword2=keyword
     keyword = keyword.toLowerCase();
     keywordsArray.push('%' + keyword + '%');
-    keyword = '%' + capitalize(keyword) + '%';
+    keywordsArray.push('%' + capitalize(keyword) + '%');
+    keywordsArray.push('%' + keyword.toUpperCase() + '%')
     keywordsArray.push(keyword);
     
     let where = {
@@ -212,7 +213,8 @@ exports.searchProductsMore = catchAsync(async(req, res, next) => {
     let keywordsArray = [];
     keyword = keyword.toLowerCase();
     keywordsArray.push('%' + keyword + '%');
-    keyword = '%' + capitalize(keyword) + '%';
+    keywordsArray.push('%' + capitalize(keyword) + '%');
+    keywordsArray.push('%' + keyword.toUpperCase() + '%')
     keywordsArray.push(keyword);
     let where = {
         [Op.or]: [{
@@ -258,7 +260,8 @@ exports.searchLite = catchAsync(async(req, res, next) => {
     let keywordsArray = [];
     keyword = keyword.toLowerCase();
     keywordsArray.push('%' + keyword + '%');
-    keyword = '%' + capitalize(keyword) + '%';
+    keywordsArray.push('%' + capitalize(keyword) + '%');
+    keywordsArray.push('%' + keyword.toUpperCase() + '%')
     keywordsArray.push(keyword);
     let where = {
         [Op.or]: [{
@@ -294,27 +297,26 @@ exports.searchLite = catchAsync(async(req, res, next) => {
     let names=[]
     for(const product of products){
         console.log(product.name_tm,product.name_ru,keyword2)
-        if(product.name_tm.includes(keyword2) || product.name_tm.includes(capitalize(keyword2))){
+        if(product.name_tm.includes(keyword2) || product.name_tm.includes(capitalize(keyword2))|| product.name_tm.includes(keyword2.toLowerCase()) || product.name_tm.includes(keyword2.toUpperCase())){
             names.push(product.name_tm)
         }else {
             names.push(product.name_ru)
         }
 }
     for(const subcategory of subcategories){
-        if(subcategory.name_tm.includes(keyword2) || subcategory.name_tm.includes(capitalize(keyword2))){
+        if(subcategory.name_tm.includes(keyword2) || subcategory.name_tm.includes(capitalize(keyword2)) || subcategory.name_tm.includes(keyword2.toLowerCase()) || subcategory.name_tm.includes(keyword2.toUpperCase())){
             names.push(subcategory.name_tm)
         }else {
             names.push(subcategory.name_ru)
         }
     }
     for(const seller of sellers){
-        if(seller.name_tm.includes(keyword2) || seller.name_tm.includes(capitalize(keyword2))){
+        if(seller.name_tm.includes(keyword2) || seller.name_tm.includes(capitalize(keyword2)) || seller.name_tm.includes(keyword2.toLowerCase()) || seller.name_tm.includes(keyword2.toUpperCase())){
             names.push(seller.name_tm)
         }else {
             names.push(seller.name_ru)
         }
     }
-    console.log(names)
     return res.status(200).send(names);
 })
 exports.getOneProduct = catchAsync(async(req, res, next) => {
