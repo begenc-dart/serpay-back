@@ -32,8 +32,12 @@ exports.getAllFreeProducts = catchAsync(async(req, res, next) => {
         index+=1
     }
     const obj={
-        expire_time:free_products[0].expire_date,
-        data:free_products
+        expire_time:null,
+        data:[]
+    }
+    if(free_products.length!=0){
+        obj.expire_time=free_products[0].expire_date
+        obj.data=free_products
     }
     console.log()
     return res.status(200).send(obj)
