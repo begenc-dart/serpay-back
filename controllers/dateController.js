@@ -22,7 +22,7 @@ const dates = schedule.scheduleJob('0 0 * * * *', async function() {
         console.log(`Product with id: ${product.product_id} is not new product now`)
     }
 });
-const isParticipating = schedule.scheduleJob('30 29 * * * *', async function() {
+const isParticipating = schedule.scheduleJob('0 0 * * * *', async function() {
     const free_product=await Freeproducts.findOne({where:{isActive:true}})
     if(free_product){
         const expire_time=free_product.expire_date

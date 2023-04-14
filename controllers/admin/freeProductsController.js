@@ -77,7 +77,7 @@ exports.deleteFreeProduct = catchAsync(async(req, res, next) => {
     for (const sharing_user of sharing_users){
         array.push(sharing_user.userId)
     }
-    await Users.update({isParticipating:false},{where:{[Op.in]:array}})
+    await Users.update({isParticipating:false},{where:{id:{[Op.not]:null}}})
     await freeproduct.destroy()
 
     return res.status(200).send({ msg: "Sucessfully deleted" })

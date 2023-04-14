@@ -55,7 +55,7 @@ exports.allSellers = catchAsync(async(req, res, next) => {
         offset,
         where,
         order: [
-            ["id", "DESC"]
+            ["updatedAt", "DESC"]
         ]
     })
     let count = await Seller.count({where})

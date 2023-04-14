@@ -50,7 +50,7 @@ exports.getAllOrders = catchAsync(async(req, res, next) => {
     const orders = await Orders.findAll({
         where,
         order: [
-            ['updatedAt', 'DESC']
+            ['id', 'DESC']
         ],
         limit,
         offset,
