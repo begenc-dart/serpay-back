@@ -137,7 +137,7 @@ exports.changeOrderStatus = catchAsync(async(req, res, next) => {
         return next(new AppError('Order did not found with that ID', 404));
     }
 
-    if (req.body.status == "Gowshuruldy") {
+    if (req.body.status == "Gowshuryldy") {
         for (var i = 0; i < order.order_products.length; i++) {
             const product = await Products.findOne({
                 where: { product_id: order.order_products[i].product_id },
