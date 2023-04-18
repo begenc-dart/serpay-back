@@ -26,9 +26,6 @@ app.use('/users', require('./routes/users/usersRouter'));
 app.use('/admin', require('./routes/admin/adminRouter'));
 app.use('/public', require('./routes/public/publicRouter'));
 app.use("/seller", require("./routes/seller/sellerRouter"))
-app.get("/finished",()=>{
-    console.log("finished");
-})
 app.all('*', (req, res, next) => {
     next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
 });

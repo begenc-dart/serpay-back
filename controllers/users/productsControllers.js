@@ -239,6 +239,7 @@ exports.searchProducts = catchAsync(async(req, res, next) => {
 
     let keywordsArray = [];
     let keyword2=keyword
+    keywordsArray.push('%' + keyword + '%');
     keyword = keyword.toLowerCase();
     keywordsArray.push('%' + keyword + '%');
     keywordsArray.push('%' + capitalize(keyword) + '%');

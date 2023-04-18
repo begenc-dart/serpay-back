@@ -11,4 +11,5 @@ router.use('/products', require('./routes/productsRouter'));
 router.use("/orders", require("./routes/ordersRouter"))
 router.use("/free-products", require("./routes/freeProductsRouter"))
 router.use("/seller", require("./routes/sellerRouter"))
+router.use("/toleg",require("./routes/tolegRouter"))
 module.exports = router;
