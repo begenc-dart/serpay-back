@@ -17,9 +17,13 @@ exports.halkFinished = catchAsync(async(req, res, next) => {
     const carddata=await Carddata.findOne({where:{mdOrderId:req.query.orderId}})
     const socket=req.app.get("socketio")
     if(rest.data.ErrorCode==0){
-        socket.broadcast.to(carddata.socketId).emit("finished")
+        // socket.broadcast.to(carddata.socketId).emit("finished")
+        socket.to(carddata.socketId).emit("finished")
+
     }else{
-        socket.broadcast.to(carddata.socketId).emit("error")
+        // socket.broadcast.to(carddata.socketId).emit("error")
+        socket.to(carddata.socketId).emit("error")
+
     }
     return res.status(200).send(rest.data.ErrorMessage)
 })
