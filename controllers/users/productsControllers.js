@@ -159,7 +159,7 @@ exports.getOneProduct = catchAsync(async(req, res, next) => {
 })
 exports.getTopProducts = catchAsync(async(req, res) => {
     const limit = req.query.limit || 10;
-    const offset = req.query.ofsset || 0
+    const offset = req.query.offset || 0
     const { isAction, discount, } = req.query;
     var order, where = {};
     order=getOrder(req.query)
