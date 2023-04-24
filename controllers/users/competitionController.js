@@ -10,6 +10,15 @@ exports.enterToCompetition = catchAsync(async(req, res, next) => {
     const freeproduct = await Freeproducts.findOne({ where: { freeproduct_id } })
     if (!freeproduct) return next(new AppError("Product with that not found", 404))
     req.body.freeproductId = freeproduct.id
+    if(freeproduct){
+        const expire_time=freeproduct.expire_date
+        const now=new Date()
+        const split=expire_time.split(" ")
+        const expire_date=new Date(split[0]+"T"+split[1])
+        if(expire_date.getDate()==now.getDate() && expire_date.getHours()==now.getHours()){
+            return next(new AppError("Time is expired", 403))
+        }
+    }
     req.body.userId = req.user.id
     const sharing_user = await Sharingusers.create(req.body)
     await Users.update({isParticipating:true},{where:{id:req.user.id}})
@@ -29,6 +38,15 @@ exports.addOne = catchAsync(async(req, res, next) => {
     if(!user) return next(new AppError("User with your parameters does not exist",404))
     const freeproduct = await Freeproducts.findOne({ where: { freeproduct_id: req.body.freeproduct_id } })
     if (!freeproduct) return next(new AppError("Free product with that id not found"), 404)
+    if(freeproduct){
+        const expire_time=freeproduct.expire_date
+        const now=new Date()
+        const split=expire_time.split(" ")
+        const expire_date=new Date(split[0]+"T"+split[1])
+        if(expire_date.getDate()==now.getDate() && expire_date.getHours()==now.getHours()){
+            return next(new AppError("Time is expired", 403))
+        }
+    }
     const sharing_user = await Sharingusers.findOne({ where: { userId:user.id,freeproductId:freeproduct.id } })
     if (!sharing_user) return next(new AppError("Sharing user with that id not found"), 404)
     await sharing_user.update({
@@ -42,6 +60,17 @@ exports.addOneFromLink = catchAsync(async(req, res, next) => {
     if(req.user.isParticipating) return next(new AppError("You already competing or gave your voice",402))
     const sharing_user = await Sharingusers.findOne({ where: { sharinguser_id:req.body.sharinguser_id } })
     if (!sharing_user) return next(new AppError("Sharing user with that id not found"), 404)
+    const freeproduct = await Freeproducts.findOne({ where: { id: sharing_user.freeproductId } })
+    if (!freeproduct) return next(new AppError("Free product with that id not found"), 404)
+    if(freeproduct){
+        const expire_time=freeproduct.expire_date
+        const now=new Date()
+        const split=expire_time.split(" ")
+        const expire_date=new Date(split[0]+"T"+split[1])
+        if(expire_date.getDate()==now.getDate() && expire_date.getHours()==now.getHours()){
+            return next(new AppError("Time is expired", 403))
+        }
+    }
     await sharing_user.update({
         count: sharing_user.count + 1
     })

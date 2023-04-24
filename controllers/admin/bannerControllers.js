@@ -10,7 +10,7 @@ exports.addBanner = catchAsync(async(req, res, next) => {
     return res.status(201).send(newBanner);
 });
 exports.editBanner = catchAsync(async(req, res, next) => {
-    const updateBanner = await Banners.findOne({ banner_id: req.params.id })
+    const updateBanner = await Banners.findOne({where:{ banner_id: req.params.id }})
     console.log(req.body)
     if (!updateBanner)
         return next(new AppError("Banner with that id not found"), 404)
