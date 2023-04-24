@@ -4,7 +4,6 @@ const {  Sharingusers, Freeproducts,  Enteredusers,Users } = require('../../mode
 const { Op } = require("sequelize")
 
 exports.enterToCompetition = catchAsync(async(req, res, next) => {
-    if (req.user.isParticipating) return next(new AppError("You are already competing", 403))
     const { freeproduct_id } = req.body
     console.log(req.body)
     const freeproduct = await Freeproducts.findOne({ where: { freeproduct_id } })
@@ -20,7 +19,12 @@ exports.enterToCompetition = catchAsync(async(req, res, next) => {
         }
     }
     req.body.userId = req.user.id
-    const sharing_user = await Sharingusers.create(req.body)
+    if (req.user.isParticipating){
+        var sharing_user=await Sharingusers.findOne({where:{userId:req.user.id,freeproductId:freeproduct.id}})
+        const link = "http://panda.com.tm/hyzmatlar/share/" + freeproduct.freeproduct_id+"?sharinguser_id="+sharing_user.sharinguser_id
+        if(sharing_user) return res.status(201).send({sharing_user,link})
+    }
+    var sharing_user = await Sharingusers.create(req.body)
     await Users.update({isParticipating:true},{where:{id:req.user.id}})
     const link = "http://panda.com.tm/hyzmatlar/share/" + freeproduct.freeproduct_id+"?sharinguser_id="+sharing_user.sharinguser_id
     return res.status(201).send({sharing_user,link})
