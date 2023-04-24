@@ -17,11 +17,23 @@ exports.halkFinished = catchAsync(async(req, res, next) => {
     const carddata=await Carddata.findOne({where:{mdOrderId:req.query.orderId}})
     const socket=req.app.get("socketio")
     if(rest.data.ErrorCode==0){
-        // socket.broadcast.to(carddata.socketId).emit("finished")
         socket.to(carddata.socketId).emit("finished")
 
     }else{
-        // socket.broadcast.to(carddata.socketId).emit("error")
+        socket.to(carddata.socketId).emit("error")
+
+    }
+    return res.status(200).send(rest.data.ErrorMessage)
+})
+exports.senagatFinished = catchAsync(async(req, res, next) => {
+    const rest=await axios.get("https://epg.senagatbank.com.tm/epg/rest/getOrderStatus.do?language=ru&userName=panda&password=panda1&orderId="+req.query.orderId)
+    console.log(rest.data)
+    const carddata=await Carddata.findOne({where:{mdOrderId:req.query.orderId}})
+    const socket=req.app.get("socketio")
+    if(rest.data.ErrorCode==0){
+        socket.to(carddata.socketId).emit("finished")
+
+    }else{
         socket.to(carddata.socketId).emit("error")
 
     }
