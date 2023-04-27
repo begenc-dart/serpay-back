@@ -26,7 +26,6 @@ const { login, protect } = require("../../../controllers/admin/adminControllers"
 const router = express.Router();
 router.get('/', getAllActiveProducts);
 router.get("/set-expire",setExpireTime)
-router.get('/non-active', getAllNonActiveProducts);
 router.get("/:product_id", getOneProduct)
 router.post("/add", addProduct)
 router.post("/add/size/:id", addSize)

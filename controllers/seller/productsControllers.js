@@ -15,7 +15,8 @@ const {
     Images,
     Productsizes,
     Productcolor,
-    Details
+    Details,
+    Seller
 } = require('../../models');
 const capitalize = function(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -164,6 +165,8 @@ exports.addProduct = catchAsync(async(req, res, next) => {
         stock_data.productId = newProduct.id
         await Stock.create(stock_data)
     }
+    const today=new Date()
+    await Seller.update({updatedAt:today},{where:{id:req.seller.id}})
     return res.status(201).send(newProduct)
 })
 exports.uploadExcel=catchAsync(async(req,res,next)=>{
@@ -299,5 +302,8 @@ exports.addFromExcel=catchAsync(async(req,res,next)=>{
                     }
                 }
     }
+    const today=new Date()
+    await Seller.update({updatedAt:today},{where:{id:req.seller.id}})
+    
     return res.send(data)
 })

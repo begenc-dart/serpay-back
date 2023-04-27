@@ -16,7 +16,7 @@ const {
     Images,
     Productsizes,
     Productcolor,
-
+    Seller,
     Details
 } = require('../../models');
 const { discount } = require('../users/productsControllers');
@@ -95,62 +95,6 @@ exports.getAllActiveProducts = catchAsync(async(req, res) => {
     });
     const count = await Products.count()
     return res.status(200).send({ products, count });
-});
-exports.getAllNonActiveProducts = catchAsync(async(req, res) => {
-    const limit = req.query.limit || 20;
-    let { offset, keyword, categoryId, subcategoryId, brandId } = req.query;
-
-    var where = {
-        isActive: false,
-    };
-    if (keyword) {
-        let keywordsArray = [];
-        keyword = keyword.toLowerCase();
-        keywordsArray.push('%' + keyword + '%');
-        keyword = '%' + capitalize(keyword) + '%';
-        keywordsArray.push(keyword);
-
-        where = {
-            [Op.or]: [{
-                    name_tm: {
-                        [Op.like]: {
-                            [Op.any]: keywordsArray,
-                        },
-                    },
-                },
-                {
-                    name_ru: {
-                        [Op.like]: {
-                            [Op.any]: keywordsArray,
-                        },
-                    },
-                },
-                {
-                    name_en: {
-                        [Op.like]: {
-                            [Op.any]: keywordsArray,
-                        },
-                    },
-                },
-            ],
-            isActive: false,
-        };
-    }
-
-    if (categoryId) where.categoryId = categoryId;
-    if (subcategoryId) where.subcategoryId = subcategoryId
-
-    const products = await Products.findAll({
-        where,
-        limit,
-        offset,
-        order: [
-            ['updatedAt', 'DESC']
-        ],
-        include,
-    });
-
-    return res.status(200).send(products);
 });
 exports.getOneProduct = catchAsync(async(req, res, next) => {
     const { product_id } = req.params
@@ -376,6 +320,7 @@ exports.editProduct = catchAsync(async(req, res, next) => {
         stock_data.productId = product.id
         await Stock.update({stock_data},{where:{productId:product.id,productsizeId:null}})
     }
+    await isSeller(product)
     return res.status(200).send(product);
 });
 exports.editProductStatus = catchAsync(async(req, res, next) => {
@@ -581,4 +526,10 @@ exports.setExpireTime=catchAsync(async(req,res,next)=>{
 const intoArray = (file) => {
     if (file[0].length == undefined) return file
     else return file[0]
+}
+const isSeller=async(product)=>{
+    if(product.sellerId!=null){
+        const today=new Date()
+        await Seller.update({updatedAt:today})
+    }
 }
