@@ -24,6 +24,14 @@ exports.enterToCompetition = catchAsync(async(req, res, next) => {
         const link = "http://panda.com.tm/hyzmatlar/share/" + freeproduct.freeproduct_id+"?sharinguser_id="+sharing_user.sharinguser_id
         if(sharing_user) return res.status(201).send({sharing_user,link})
     }
+    if (req.user.isParticipating){
+        console.log("ife firdim")
+        var sharing_user=await Sharingusers.findOne({where:{userId:req.user.id,freeproductId:freeproduct.id}})
+        if(sharing_user){
+            const link = "http://panda.com.tm/hyzmatlar/share/" + freeproduct.freeproduct_id+"?sharinguser_id="+sharing_user.sharinguser_id
+            return res.status(201).send({sharing_user,link})
+        }
+    }
     var sharing_user = await Sharingusers.create(req.body)
     await Users.update({isParticipating:true},{where:{id:req.user.id}})
     const link = "http://panda.com.tm/hyzmatlar/share/" + freeproduct.freeproduct_id+"?sharinguser_id="+sharing_user.sharinguser_id
