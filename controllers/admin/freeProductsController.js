@@ -27,11 +27,39 @@ exports.addFreeProduct = catchAsync(async(req, res, next) => {
     return res.status(201).send(freeproduct)
 })
 exports.getFreeProduct = catchAsync(async(req, res, next)=>{
-
-    const freeproduct = await Freeproducts.findOne({ where: { freeproduct_id:req.params.id },include:{model:Images,as:"images"} })
-    if (!freeproduct) return next(new AppError("Free product not found with that id", 404))
-``
-    return res.status(200).send(freeproduct)
+    const free_product = await Freeproducts.findOne({ where: { freeproduct_id: req.params.id },
+        include:{
+            model:Images,
+            as:"images"
+        } })
+    if (!free_product) return next(new AppError("Free product not found with that id", 404))
+    const max = await Sharingusers.max("count", { where: { freeproductId: free_product.id },        
+     })
+    const count=await Sharingusers.count({where:{freeproductId:free_product.id}})
+    if(max) free_product.max=max
+    if(count) free_product.contestants=count
+    const top5 = await Sharingusers.findAll({
+        where: { freeproductId: free_product.id },
+        order: [
+            ["count", "DESC"]
+        ],
+        limit: 5
+    })
+    let ready_top5 = []
+    for (const top of top5) {
+        const user = await Users.findOne({
+            where: { id: top.userId },
+            attributes: ["image", "nickname","user_phone","username"]
+        })
+        let obj = {
+            count: top.count,
+            nickname: user.nickname,
+            username:user.username,
+            phone_number:user.user_phone,
+        }
+        ready_top5.push(obj)
+    }
+    return res.status(200).send({ free_product, top5: ready_top5 })
 })
 exports.editFreeProduct = catchAsync(async(req, res, next) => {
     const freeproduct_id = req.params.id

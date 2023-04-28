@@ -24,7 +24,7 @@ exports.isActive = catchAsync(async(req, res, next) => {
 exports.allSellers = catchAsync(async(req, res, next) => {
     let limit = req.query.limit || 20
     const offset = req.query.offset || 0
-    let {keyword}=req.query
+    let {keyword,isActive}=req.query
     var where = {};
     if (keyword && keyword != "undefined") {
         let keywordsArray = [];
@@ -50,6 +50,7 @@ exports.allSellers = catchAsync(async(req, res, next) => {
             ],
         };
     }
+    if(isActive!="undefined") where.isActive=isActive
     let seller = await Seller.findAll({
         limit,
         offset,

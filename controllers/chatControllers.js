@@ -79,7 +79,10 @@ module.exports = (io) => {
             let delivery_time=""
             delivery_time += lessThan(today.getDate()) + "" + lessThan(today.getMonth() + 1) + "" + lessThan(today.getHours())+lessThan(today.getMinutes())+lessThan(today.getSeconds())+today.getMilliseconds()
             console.log(delivery_time)
-            const res=await axios.get("https://epg.rysgalbank.tm/epg/rest/register.do?currency=934&language=ru&userName=pandacomtmAPI&password=pandacomtm&returnUrl=finish.html&amount="+ob.amount*100+"&orderNumber="+delivery_time)
+            const agent = new https.Agent({  
+                rejectUnauthorized: false
+              });
+            const res=await axios.get("https://epg.rysgalbank.tm/epg/rest/register.do?currency=934&language=ru&userName=pandacomtmAPI&password=pandacomtm&returnUrl=finish.html&amount="+ob.amount*100+"&orderNumber="+delivery_time,{httpsAgent:agent})
             console.log(res.data)
             const carddata=await Carddata.create({orderId,mdOrderId:res.data.orderId,socketId:socket.id})
             socket.emit("link",(res.data.formUrl))
