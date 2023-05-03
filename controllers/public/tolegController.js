@@ -39,6 +39,20 @@ exports.senagatFinished = catchAsync(async(req, res, next) => {
     }
     return res.status(200).send(rest.data.ErrorMessage)
 })
+exports.rysgalFinished = catchAsync(async(req, res, next) => {
+    const rest=await axios.get("https://epg.rysgalbank.tm/epg/rest/getOrderStatus.do?language=ru&userName=pandacomtAPI&password=pandacomtm&orderId="+req.query.orderId)
+    console.log(rest.data)
+    const carddata=await Carddata.findOne({where:{mdOrderId:req.query.orderId}})
+    const socket=req.app.get("socketio")
+    if(rest.data.ErrorCode==0){
+        socket.to(carddata.socketId).emit("finished")
+
+    }else{
+        socket.to(carddata.socketId).emit("error")
+
+    }
+    return res.status(200).send(rest.data.ErrorMessage)
+})
 exports.sellerProduct = catchAsync(async(req, res, next) => {
     let seller_id = req.params.id
     const limit=req.query.limit || 20
