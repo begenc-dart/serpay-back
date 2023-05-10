@@ -494,6 +494,10 @@ exports.getCategoryProducts = catchAsync(async(req, res, next) => {
     var order,where=[];
     order=getOrder(req.query)
     where=getWhere(req.query)
+    if (discount && discount != "false") 
+    where.push({
+        discount : {[Op.ne]: 0}
+    })
     where.push({categoryId:category.id})
     order.push(["images", "id", "DESC"])
     let products = await Products.findAll({

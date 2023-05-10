@@ -44,7 +44,9 @@ exports.getAllOrders = catchAsync(async(req, res, next) => {
         user_phone = '+' + user_phone;
         where.user_phone = user_phone;
     }
+    where.status="online!"
     if (status!="" && status !=null) {
+        let status={[Op.and]:[{[Op.not]:"online!"},{[Op.is]:status}]}
         where.status = status
     }   
     const orders = await Orders.findAll({

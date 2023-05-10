@@ -11,6 +11,7 @@ exports.addMyOrders = catchAsync(async(req, res, next) => {
         user_phone,
         seller_id
     } = req.body;
+    let status="Garashylyar"
     let checkedProducts = [];
     let total_price = 0;
     let total_quantity = 0;
@@ -51,7 +52,6 @@ exports.addMyOrders = catchAsync(async(req, res, next) => {
             var seller = await Seller.findOne({where:{ seller_id: order_products[0].seller_id }})
             sellerId = seller.id
         }
-        console.log(123,req.body.delivery_time)
         let delivery_time = req.body.delivery_time.split(" ")
         let time = delivery_time[1]
         const today = new Date()
@@ -62,6 +62,9 @@ exports.addMyOrders = catchAsync(async(req, res, next) => {
             delivery_time = lessThan(tomorrow.getDate()) + "." + lessThan(tomorrow.getMonth() + 1) + "/" + time
         } else {
             delivery_time = lessThan(today.getDate()) + "." + lessThan(today.getMonth() + 1) + "/" + time
+        }
+        if(payment_type=="online"){
+            status="Online!"
         }
         const order = await Orders.create({
             userId: req.user.id,
