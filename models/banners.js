@@ -12,7 +12,8 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: DataTypes.UUIDV4
         },
         link: DataTypes.STRING,
-        image: DataTypes.STRING
+        image: DataTypes.STRING,
+        image_mobile: DataTypes.STRING
     }, {
         sequelize,
         tableName: "banners",

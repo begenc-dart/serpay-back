@@ -3,7 +3,8 @@ const {
     uploadBannerImage,
     addBanner,
     deleteBanner,
-    editBanner
+    editBanner,
+    uploadBannerImageMobile
 } = require('../../../controllers/admin/bannerControllers');
 const {
     getAllBanners,
@@ -18,5 +19,6 @@ router.post('/add', addBanner);
 router.patch("/:id", editBanner)
 router.post('/delete/:id', deleteBanner);
 router.post('/upload-image/:id', uploadBannerImage);
+router.post("/upload-image-mobile/:id",uploadBannerImageMobile)
 
 module.exports = router;

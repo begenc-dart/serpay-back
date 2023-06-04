@@ -36,6 +36,25 @@ exports.uploadBannerImage = catchAsync(async(req, res, next) => {
 
     return res.status(201).send(banner);
 });
+exports.uploadBannerImageMobile = catchAsync(async(req, res, next) => {
+    console.log("i am at banner")
+    const banner_id = req.params.id;
+    console.log(banner_id)
+    const banner = await Banners.findOne({ where: { banner_id } });
+    req.files = Object.values(req.files)
+    if (!banner)
+        return next(new AppError('Banner did not found with that ID', 404));
+    const image_mobile = `${banner_id}_banner_mobile.webp`;
+    const photo = req.files[0].data
+    let buffer = await sharp(photo).webp().toBuffer()
+    await sharp(buffer).toFile(`static/${image_mobile}`);
+
+    await banner.update({
+        image_mobile
+    });
+
+    return res.status(201).send(banner);
+});
 exports.deleteBanner = catchAsync(async(req, res, next) => {
     const banner_id = req.params.id;
     const banner = await Banners.findOne({ where: { banner_id } });
