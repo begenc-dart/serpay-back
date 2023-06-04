@@ -11,7 +11,8 @@ const {
     getTopProducts,
     getBrandProducts,
     getCategoryProducts,
-    getSubcategoryProducts
+    getSubcategoryProducts,
+    getOwnerProducts
 } = require('../../../controllers/users/productsControllers');
 router.get("/", getProducts)
 router.get("/top", getTopProducts)
@@ -23,6 +24,7 @@ router.get("/action", actionProducts)
 router.get("/brands/:id", getBrandProducts)
 router.get("/categories/:id", getCategoryProducts)
 router.get("/sub-categories/:id", getSubcategoryProducts)
+router.get("/own",getOwnerProducts)
 router.get("/:id", getOneProduct)
 
 

@@ -372,6 +372,10 @@ exports.getOneProduct = catchAsync(async(req, res, next) => {
                 as: "brand"
             },
             {
+                model:Categories,
+                as:"category"
+            },
+            {
                 model: Seller,
                 as: "seller"
             }
@@ -389,9 +393,11 @@ exports.getOneProduct = catchAsync(async(req, res, next) => {
         },
         limit:10
     })
+    const category=await Categories.findOne({where:{id:oneProduct.categoryId}})
     const product = {
         oneProduct,
-        recommenendations
+        recommenendations,
+        category_id:category.category_id
     }
     return res.send({ product })
 })

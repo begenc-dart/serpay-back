@@ -124,7 +124,12 @@ exports.getOneProduct = catchAsync(async(req, res, next) => {
             {
                 model: Brands,
                 as: "brand"
-            },{
+            },
+            {
+                model:Categories,
+                as: "category"
+            },
+            {
                 model:Seller,
                 as:"seller"
             }

@@ -108,5 +108,5 @@ exports.getMyResult = catchAsync(async(req, res, next) => {
     const link = "http://panda.com.tm/hyzmatlar/share/" + freeproduct.freeproduct_id+"?sharinguser_id="+sharing_user.sharinguser_id
     return res.status(200).send({ position: index,sharing_user:req.user,count:sharing_users[index-1].count,link })
     }
-    else return res.status(404).send("You are not competing")
+    else return res.status(200).send({position:null})
 })
